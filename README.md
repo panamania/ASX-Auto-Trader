@@ -13,7 +13,7 @@ An automated trading system that uses GPT to analyze ASX news, generate trading 
 
 ## Architecture
 
-![Architecture Diagram](docs/architecture.png)
+![Architecture Diagram](docs/architecture.html)
 
 The system consists of several components:
 1. **News Collector**: Fetches latest ASX news input
