@@ -3,13 +3,14 @@ Main trading system module that orchestrates all components.
 """
 import logging
 from datetime import datetime
-from asx_trader.config import Config
-from asx_trader.news import ASXNewsCollector
-from asx_trader.prediction import GPTEnhancedPredictionEngine
-from asx_trader.risk import RiskManagement
-from asx_trader.broker import BrokerAPI
-from asx_trader.monitoring import MonitoringSystem
-from asx_trader.aws import AWSDeployment
+from trading.config import Config
+from trading.news import ASXNewsCollector
+from trading.market import MarketScanner
+from trading.prediction import GPTEnhancedPredictionEngine
+from trading.risk import RiskManagement
+from trading.broker import BrokerAPI
+from trading.monitoring import MonitoringSystem
+from trading.aws import AWSDeployment
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class TradingSystem:
         
         # Initialize components
         self.news_collector = ASXNewsCollector()
+        self.market_scanner = MarketScanner()
         self.prediction_engine = GPTEnhancedPredictionEngine()
         self.risk_management = RiskManagement()
         self.broker_api = BrokerAPI()
@@ -28,38 +30,69 @@ class TradingSystem:
         self.cloud = AWSDeployment()
         
         # Trading configuration
-        self.watch_symbols = Config.WATCH_SYMBOLS
         self.max_position_size = Config.MAX_POSITION_SIZE
         self.trading_enabled = Config.TRADING_ENABLED
         
         logger.info(f"Trading system initialized with trading {'enabled' if self.trading_enabled else 'disabled'}")
+        logger.info(f"Market scan mode: {Config.MARKET_SCAN_MODE}")
         
     def execute_trading_cycle(self):
         """Execute a complete trading cycle"""
         try:
-            # 1. Collect news
-            news_items = self.news_collector.fetch_latest_news(self.watch_symbols)
-            if not news_items:
+            cycle_start_time = datetime.now()
+            logger.info(f"Starting trading cycle at {cycle_start_time}")
+            
+            # 1. Scan market for symbols
+            all_symbols = self.market_scanner.get_market_symbols()
+            logger.info(f"Scanning {len(all_symbols)} symbols in the market")
+            
+            # 2. Collect market data
+            market_data = self.market_scanner.get_market_data(all_symbols)
+            
+            # 3. Find potential opportunities (pre-filtering)
+            opportunity_symbols = self.market_scanner.find_opportunities(market_data)
+            logger.info(f"Found {len(opportunity_symbols)} potential opportunities")
+            
+            # 4. Collect news for the whole market and specific opportunities
+            market_news = self.news_collector.fetch_latest_news(market_wide=True)
+            
+            # Also get specific news for opportunity symbols if we have a reasonable number
+            symbol_specific_news = []
+            if opportunity_symbols and len(opportunity_symbols) <= 50:
+                symbol_specific_news = self.news_collector.fetch_latest_news(
+                    symbols=opportunity_symbols, 
+                    market_wide=False
+                )
+            
+            # Combine all news
+            all_news = market_news + symbol_specific_news
+            logger.info(f"Collected {len(all_news)} news items")
+                
+            if not all_news:
                 logger.info("No news items found, skipping cycle")
                 return {"status": "skipped", "reason": "no news"}
                 
-            # 2. Analyze news and generate signals
-            signals = self.prediction_engine.analyze_news(news_items)
+            # 5. Analyze news and generate signals
+            signals = self.prediction_engine.analyze_news(all_news)
+            logger.info(f"Generated {len(signals)} trading signals")
             
             # Extract symbols from signals
             signal_symbols = set()
             for signal in signals:
                 signal_symbols.update(signal.get("symbols", []))
                 
-            # 3. Perform risk assessment
+            logger.info(f"Signals reference {len(signal_symbols)} unique symbols")
+            
+            # 6. Perform risk assessment on symbols with signals
             risk_assessment = self.risk_management.assess_market_risk(
-                list(signal_symbols), signals
+                list(signal_symbols), signals, market_data
             )
             
-            # 4. Make trading decisions
-            orders = self._make_trading_decisions(signals, risk_assessment)
+            # 7. Make trading decisions
+            orders = self._make_trading_decisions(signals, risk_assessment, market_data)
+            logger.info(f"Generated {len(orders)} order recommendations")
             
-            # 5. Execute trades if enabled
+            # 8. Execute trades if enabled
             executed_orders = []
             if self.trading_enabled:
                 for order in orders:
@@ -76,23 +109,30 @@ class TradingSystem:
                     for idx, order in enumerate(orders)
                 ]
                 
-            # 6. Monitor and notify
+            # 9. Monitor and notify
             self.monitoring.track_trading_activity(
                 executed_orders, signals, risk_assessment
             )
             
-            # 7. Save results to cloud
-            self.cloud.save_trading_results({
-                "cycle_time": datetime.now().isoformat(),
-                "news_count": len(news_items),
+            # 10. Save results to cloud
+            cycle_data = {
+                "cycle_time": cycle_start_time.isoformat(),
+                "completion_time": datetime.now().isoformat(),
+                "scan_mode": Config.MARKET_SCAN_MODE,
+                "scanned_symbols": len(all_symbols),
+                "opportunity_symbols": len(opportunity_symbols),
+                "news_count": len(all_news),
                 "signals": signals,
                 "risk_assessment": risk_assessment,
                 "orders": executed_orders,
                 "trading_enabled": self.trading_enabled
-            }, "trading_cycle")
+            }
+            
+            self.cloud.save_trading_results(cycle_data, "trading_cycle")
             
             return {
                 "status": "success",
+                "scanned_symbols": len(all_symbols),
                 "signals": len(signals),
                 "orders": len(executed_orders)
             }
@@ -105,7 +145,7 @@ class TradingSystem:
             )
             return {"status": "error", "message": str(e)}
     
-    def _make_trading_decisions(self, signals, risk_assessment):
+    def _make_trading_decisions(self, signals, risk_assessment, market_data=None):
         """Translate signals into actionable orders with risk management applied"""
         orders = []
         
@@ -150,13 +190,26 @@ class TradingSystem:
                 # Calculate position size
                 position_size = self.max_position_size * risk_factor * symbol_risk_factor * confidence_factor
                 
-                # Get current price from risk assessment
-                current_price = next(
-                    (data.get("current_price", 100) 
-                     for s, data in risk_assessment.get("market_data", {}).items() 
-                     if s == symbol),
-                    100  # Default price if not found
-                )
+                # Get current price from market data or risk assessment
+                current_price = None
+                
+                # First try to get from market data
+                if market_data and symbol in market_data:
+                    current_price = market_data[symbol].get("price", None)
+                
+                # If not found, try risk assessment
+                if current_price is None:
+                    current_price = next(
+                        (data.get("current_price", None) 
+                         for s, data in risk_assessment.get("market_data", {}).items() 
+                         if s == symbol),
+                        None  
+                    )
+                
+                # Default price if still not found
+                if current_price is None:
+                    current_price = 100
+                    logger.warning(f"No price data found for {symbol}, using default price of {current_price}")
                 
                 # Calculate quantity
                 quantity = int(position_size / current_price)
@@ -169,7 +222,8 @@ class TradingSystem:
                         "estimated_cost": quantity * current_price,
                         "confidence": signal.get("confidence"),
                         "risk_level": symbol_risk,
-                        "news_id": signal.get("news_id")
+                        "news_id": signal.get("news_id"),
+                        "reasoning": signal.get("reasoning", "")
                     })
         
         return orders

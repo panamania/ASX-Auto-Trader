@@ -1,5 +1,5 @@
 """
-Configuration module for the ASX-Auto-Trader system.
+Configuration module for the trading system.
 """
 import os
 from dotenv import load_dotenv
@@ -22,8 +22,13 @@ class Config:
     SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
     S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
     
+    # Market Scanning Configuration
+    MARKET_SCAN_MODE = os.environ.get("MARKET_SCAN_MODE", "full")
+    MARKET_SECTOR_FOCUS = os.environ.get("MARKET_SECTOR_FOCUS", "")
+    MAX_STOCKS_TO_ANALYZE = int(os.environ.get("MAX_STOCKS_TO_ANALYZE", "100"))
+    MIN_MARKET_CAP = float(os.environ.get("MIN_MARKET_CAP", "1000000"))
+    
     # Trading Configuration
-    WATCH_SYMBOLS = os.environ.get("WATCH_SYMBOLS", "").split(",")
     MAX_POSITION_SIZE = float(os.environ.get("MAX_POSITION_SIZE", "10000"))
     TRADING_ENABLED = os.environ.get("TRADING_ENABLED", "false").lower() == "true"
     CYCLE_INTERVAL_SECONDS = int(os.environ.get("CYCLE_INTERVAL_SECONDS", "3600"))
@@ -56,5 +61,14 @@ class Config:
         
         if missing:
             raise ValueError(f"Missing required configuration: {', '.join(missing)}")
+        
+        # Validate scan mode
+        if cls.MARKET_SCAN_MODE not in ["full", "sector", "filtered"]:
+            raise ValueError(f"Invalid MARKET_SCAN_MODE: {cls.MARKET_SCAN_MODE}. " 
+                            "Must be 'full', 'sector', or 'filtered'")
+            
+        # If sector mode, validate sector
+        if cls.MARKET_SCAN_MODE == "sector" and not cls.MARKET_SECTOR_FOCUS:
+            raise ValueError("MARKET_SECTOR_FOCUS must be specified when using sector scan mode")
         
         return True

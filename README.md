@@ -1,9 +1,11 @@
-# ASX-Auto-Trader
+# GPT-Enhanced Trading System
 
-An automated trading system that uses GPT to analyze ASX news, generate trading signals, manage risk, and execute trades.
+An automated trading system that uses GPT to analyze ASX news, generate trading signals, manage risk, and execute trades across the entire market.
 
 ## Features
 
+- **Full Market Scanning**: Scans the entire ASX market to find trading opportunities
+- **Flexible Scan Modes**: Can focus on the full market, specific sectors, or filtered stocks
 - **ASX News Integration**: Automatically fetches the latest news from the Australian Securities Exchange
 - **GPT-Enhanced Analysis**: Uses OpenAI's GPT models to analyze news and generate trading signals
 - **Risk Management**: Assesses market conditions and adjusts position sizes accordingly
@@ -16,12 +18,13 @@ An automated trading system that uses GPT to analyze ASX news, generate trading 
 ![Architecture Diagram](docs/architecture.html)
 
 The system consists of several components:
-1. **News Collector**: Fetches latest ASX news input
-2. **Prediction Engine**: GPT-enhanced analysis of news to provide BUY/SELL/HOLD signals
-3. **Risk Management**: Assesses market conditions to generate risk summaries
-4. **Broker API**: Places trades via broker API
-5. **Monitoring System**: Tracks trading activity and sends notifications
-6. **AWS Cloud Deployment**: Handles storage and cloud resources
+1. **Market Scanner**: Scans the entire market for potential opportunities
+2. **News Collector**: Fetches latest ASX news across the market
+3. **Prediction Engine**: GPT-enhanced analysis of news to provide BUY/SELL/HOLD signals
+4. **Risk Management**: Assesses market conditions to generate risk summaries
+5. **Broker API**: Places trades via broker API
+6. **Monitoring System**: Tracks trading activity and sends notifications
+7. **AWS Cloud Deployment**: Handles storage and cloud resources
 
 ## Installation
 
@@ -66,7 +69,10 @@ The system can be configured through environment variables:
 - `OPENAI_API_KEY`: Your OpenAI API key
 - `ASX_API_KEY`: API key for ASX data provider
 - `BROKER_API_KEY`: Your broker API key
-- `WATCH_SYMBOLS`: Comma-separated list of stock symbols to monitor
+- `MARKET_SCAN_MODE`: "full", "sector", or "filtered"
+- `MARKET_SECTOR_FOCUS`: Specific sector to focus on when using "sector" mode
+- `MAX_STOCKS_TO_ANALYZE`: Maximum number of stocks to analyze in each cycle
+- `MIN_MARKET_CAP`: Minimum market cap for stocks to consider (in dollars)
 - `MAX_POSITION_SIZE`: Maximum position size in dollars
 - `TRADING_ENABLED`: Set to "true" to enable actual trading, "false" for simulation
 - `CYCLE_INTERVAL_SECONDS`: Time between trading cycles
