@@ -1,0 +1,139 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\risk.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:asx_trader\\risk.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\system.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:asx_trader\\system.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\news.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:asx_trader\\news.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\market.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:asx_trader\\market.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\config.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:asx_trader\\config.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\.env.example||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.env.example||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "risk.py",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\risk.py",
+              "RelativeDocumentMoniker": "asx_trader\\risk.py",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\risk.py",
+              "RelativeToolTip": "asx_trader\\risk.py",
+              "ViewState": "AgIAAIoAAAAAAAAAAAAswKUAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-05-07T12:05:17.081Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "system.py",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\system.py",
+              "RelativeDocumentMoniker": "asx_trader\\system.py",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\system.py",
+              "RelativeToolTip": "asx_trader\\system.py",
+              "ViewState": "AgIAANUAAAAAAAAAAAAwwOQAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-05-07T12:03:05.47Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "news.py",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\news.py",
+              "RelativeDocumentMoniker": "asx_trader\\news.py",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\news.py",
+              "RelativeToolTip": "asx_trader\\news.py",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAwwGUAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-05-07T12:02:26.702Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "market.py",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\market.py",
+              "RelativeDocumentMoniker": "asx_trader\\market.py",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\market.py",
+              "RelativeToolTip": "asx_trader\\market.py",
+              "ViewState": "AgIAAO8AAAAAAAAAAAAwwAEBAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-05-07T11:59:49.441Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "config.py",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\config.py",
+              "RelativeDocumentMoniker": "asx_trader\\config.py",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\asx_trader\\config.py",
+              "RelativeToolTip": "asx_trader\\config.py",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAAAEkAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-05-07T11:58:58.433Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": ".env.example",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\.env.example",
+              "RelativeDocumentMoniker": ".env.example",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\.env.example",
+              "RelativeToolTip": ".env.example",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-05-07T11:00:18.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\sridh\\source\\repos\\ASX-Auto-Trader\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAAGwAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-05-06T10:57:50.383Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-Enhanced Trading System Architecture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #0099cc;
+            margin-top: 30px;
+        }
+
+        .diagram {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            white-space: pre;
+            font-family: "Courier New", monospace;
+            overflow-x: auto;
+        }
+
+        .description {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GPT-Enhanced Trading System Architecture</h1>
+
+    <div class="description">
+        <p>
+            This document presents the architectural diagrams for the GPT-Enhanced Trading System,
+            illustrating both the solution architecture and the data flow through the system.
+        </p>
+    </div>
+
+    <h2>Solution Architecture Diagram</h2>
+    <p>This diagram shows the main components of the trading system and their relationships.</p>
+    <div class="diagram">
+        ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+        │                                 GPT-Enhanced Trading Architecture                               │
+        └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+        ┌────────────────┐     ┌───────────────────────┐     ┌────────────────────┐     ┌───────────────┐
+        │                │     │                       │     │                    │     │               │
+        │   ASX News     │────▶│  GPT-Enhanced         │────▶│ Risk Management    │────▶│  Broker API   │
+        │   Collector    │     │  Prediction Engine    │     │ (GPT-Enhanced)     │     │  Integration  │
+        │                │     │                       │     │                    │     │               │
+        └────────────────┘     └───────────────────────┘     └────────────────────┘     └───────────────┘
+        ▲                          │                            │                        │
+        │                          │                            │                        │
+        │                          ▼                            │                        ▼
+        │                ┌───────────────────────┐             │               ┌───────────────────┐
+        │                │                       │             │               │                   │
+        │                │     Trading System    │◀────────────┘               │   Monitoring &    │
+        │                │    Orchestration      │◀───────────────────────────▶│   Alerts System   │
+        │                │                       │                             │                   │
+        │                └───────────────────────┘                             └───────────────────┘
+        │                          │                                                    │
+        │                          │                                                    │
+        │                          ▼                                                    ▼
+        ┌─────┴──────────┐     ┌───────────────────────┐                             ┌───────────────────┐
+        │                │     │                       │                             │                   │
+        │  Historical    │     │  AWS Cloud            │                             │   Notification    │
+        │  Data Store    │     │  Deployment           │                             │   Channels (SNS)  │
+        │                │     │                       │                             │                   │
+        └────────────────┘     └───────────────────────┘                             └───────────────────┘
+        │
+        │
+        ▼
+        ┌───────────────────────┐
+        │                       │
+        │  S3 Storage           │
+        │  (Results & Logs)     │
+        │                       │
+        └───────────────────────┘
+    </div>
+
+    <h2>Data Flow Diagram</h2>
+    <p>This diagram illustrates how data flows through the various components of the system.</p>
+    <div class="diagram">
+        ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+        │                               GPT-Enhanced Trading Data Flow                                    │
+        └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+        ┌─────────────────┐
+        │                 │
+        │  External ASX   │
+        │   News API      │
+        │                 │
+        └────────┬────────┘
+        │
+        │ Raw News Data
+        ▼
+        ┌───────────────────────────────────────────────────────────────────────┐
+        │                                                                       │
+        │                        ASX News Collector                             │
+        │                                                                       │
+        └───────────────────────────────────┬───────────────────────────────────┘
+        │
+        │ Filtered News Items
+        │ (headlines, content, symbols)
+        ▼
+        ┌───────────────────────────────────────────────────────────────────────┐
+        │                                                                       │
+        │                   GPT-Enhanced Prediction Engine                      │
+        │                                                                       │
+        └───────────────────────────────────┬───────────────────────────────────┘
+        │
+        │ Trading Signals
+        │ (BUY, SELL, HOLD with confidence)
+        ▼
+        ┌─────────────────────────┐     ┌───────────────────────────────────────┐
+        │                         │     │                                       │
+        │   Market Data Feed      │────▶│       Risk Management Module          │
+        │                         │     │                                       │
+        └─────────────────────────┘     └───────────────────────┬───────────────┘
+        │
+        │ Risk Assessment
+        │ (risk levels, position sizes)
+        ▼
+        ┌───────────────────────────────────────────────────────────────────────┐
+        │                                                                       │
+        │                         Trading System                                │
+        │                                                                       │
+        └──────────┬───────────────────────────────────────────┬────────────────┘
+        │                                           │
+        │ Order Instructions                        │ Trading Activity Data
+        │ (symbol, action, quantity)                │ (signals, orders, assessments)
+        ▼                                           ▼
+        ┌──────────────────────────┐                 ┌─────────────────────────────┐
+        │                          │                 │                             │
+        │      Broker API          │                 │     Monitoring System       │
+        │                          │                 │                             │
+        └──────────┬───────────────┘                 └───────────────┬─────────────┘
+        │                                                 │
+        │ Execution Results                               │ Alerts & Notifications
+        │ (order status, confirmation)                    │
+        ▼                                                 ▼
+        ┌──────────────────────────┐                 ┌─────────────────────────────┐
+        │                          │                 │                             │
+        │   Trading Account        │                 │  AWS SNS (Notifications)    │
+        │                          │                 │                             │
+        └──────────────────────────┘                 └───────────────┬─────────────┘
+        │
+        │ Delivery
+        ▼
+        ┌─────────────────────────────┐
+        │                             │
+        │  Email/SMS/Mobile           │
+        │                             │
+        └─────────────────────────────┘
+
+        ┌───────────────────────────────────────────────────────────────┐
+        │                                                               │
+        │                       AWS S3 Storage                          │
+        │                                                               │
+        └───────────────────────────────────────────────────────────────┘
+        ▲                   ▲                    ▲
+        │                   │                    │
+        │                   │                    │
+        ┌───────────┴─────┐  ┌──────────┴──────────┐ ┌──────┴─────────────┐
+        │                 │  │                     │ │                    │
+        │  Trading        │  │  Prediction         │ │  Risk              │
+        │  Results        │  │  Results            │ │  Assessments       │
+        │                 │  │                     │ │                    │
+        └─────────────────┘  └─────────────────────┘ └────────────────────┘
+    </div>
+
+    <h2>Component Descriptions</h2>
+
+    <h3>ASX News Collector</h3>
+    <p>Collects and processes news from ASX data sources, filtering by relevant symbols and extracting key information.</p>
+
+    <h3>GPT-Enhanced Prediction Engine</h3>
+    <p>Analyzes news content using OpenAI's GPT models to generate trading signals (BUY, SELL, HOLD) with confidence levels and reasoning.</p>
+
+    <h3>Risk Management</h3>
+    <p>Assesses market conditions and evaluates potential risks using GPT analysis, market data, and trading signals to determine appropriate position sizes and risk levels.</p>
+
+    <h3>Trading System</h3>
+    <p>Central orchestration component that coordinates the workflow between all other components and makes final trading decisions.</p>
+
+    <h3>Broker API Integration</h3>
+    <p>Handles communication with brokerage services to place trades based on system-generated orders.</p>
+
+    <h3>Monitoring & Alerts System</h3>
+    <p>Tracks all trading activity and system performance, generating notifications for important events and potential issues.</p>
+
+    <h3>AWS Cloud Deployment</h3>
+    <p>Manages cloud resources including S3 storage for results and SNS for notifications.</p>
+
+</body>
+</html>
