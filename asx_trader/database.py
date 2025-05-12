@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 class Database:
     """Simple SQLite database for the trading system POC"""
     
-    def __init__(self, db_path="trading.db"):
+    def __init__(self, db_path=None):
         """Initialize the database connection"""
-        self.db_path = db_path
+        self.db_path = db_path or Config.DB_PATH
         self.conn = None
         self.initialize()
         
@@ -62,6 +62,20 @@ class Database:
                     quantity INTEGER,
                     estimated_price REAL,
                     status TEXT
+                )
+                ''')
+                
+                # Run history
+                self.conn.execute('''
+                CREATE TABLE IF NOT EXISTS run_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    start_time TEXT,
+                    end_time TEXT,
+                    status TEXT,
+                    symbols_analyzed INTEGER,
+                    signals_generated INTEGER,
+                    orders_created INTEGER,
+                    next_scheduled_run TEXT
                 )
                 ''')
                 
@@ -124,6 +138,29 @@ class Database:
             logger.info(f"Saved {len(orders)} trading orders to database")
         except Exception as e:
             logger.error(f"Error saving trading orders: {e}")
+    
+    def record_run(self, start_time, end_time, status, symbols_analyzed, signals_generated, orders_created, next_run):
+        """Record details about a trading system run"""
+        try:
+            with self.conn:
+                self.conn.execute(
+                    '''INSERT INTO run_history 
+                       (start_time, end_time, status, symbols_analyzed, signals_generated, 
+                        orders_created, next_scheduled_run) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                    (
+                        start_time.isoformat(),
+                        end_time.isoformat(),
+                        status,
+                        symbols_analyzed,
+                        signals_generated,
+                        orders_created,
+                        next_run.isoformat()
+                    )
+                )
+            logger.info(f"Recorded run history. Next run scheduled at {next_run}")
+        except Exception as e:
+            logger.error(f"Error recording run history: {e}")
             
     def close(self):
         """Close the database connection"""
