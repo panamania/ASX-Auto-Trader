@@ -69,3 +69,36 @@ class MonitoringSystem:
         except Exception as e:
             logger.error(f"Error tracking trading activity: {e}")
             return False
+# Add to your trading/monitoring.py file
+def track_api_usage(api_calls, tokens_used, analysis_type):
+    """Track OpenAI API usage"""
+    try:
+        # Record in CloudWatch custom metrics
+        cloudwatch_client.put_metric_data(
+            Namespace='TradingSystem',
+            MetricData=[
+                {
+                    'MetricName': 'APICallCount',
+                    'Dimensions': [{'Name': 'AnalysisType', 'Value': analysis_type}],
+                    'Value': api_calls
+                },
+                {
+                    'MetricName': 'TokensUsed',
+                    'Dimensions': [{'Name': 'AnalysisType', 'Value': analysis_type}],
+                    'Value': tokens_used
+                }
+            ]
+        )
+        
+        # Also log to database for cost analysis
+        with db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO api_usage (timestamp, calls, tokens, analysis_type)
+                    VALUES (NOW(), %s, %s, %s)
+                    """,
+                    (api_calls, tokens_used, analysis_type)
+                )
+    except Exception as e:
+        logger.error(f"Error tracking API usage: {e}")
