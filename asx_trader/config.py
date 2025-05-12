@@ -31,7 +31,10 @@ class Config:
     # Trading Configuration
     MAX_POSITION_SIZE = float(os.environ.get("MAX_POSITION_SIZE", "10000"))
     TRADING_ENABLED = os.environ.get("TRADING_ENABLED", "false").lower() == "true"
-    CYCLE_INTERVAL_SECONDS = int(os.environ.get("CYCLE_INTERVAL_SECONDS", "3600"))
+    CYCLE_INTERVAL_MINUTES = int(os.environ.get("CYCLE_INTERVAL_MINUTES", "90"))
+    
+    # Database Configuration
+    DB_PATH = os.environ.get("DB_PATH", "data/asx_trader.db")
     
     @classmethod
     def validate(cls):
@@ -41,16 +44,22 @@ class Config:
         # Critical settings that must be present
         critical = [
             "OPENAI_API_KEY",
-            "AWS_ACCESS_KEY",
-            "AWS_SECRET_KEY",
-            "S3_BUCKET_NAME",
+            "ASX_API_KEY",
         ]
+        
+        # Add AWS settings if configured
+        if cls.AWS_ACCESS_KEY or cls.AWS_SECRET_KEY or cls.S3_BUCKET_NAME:
+            critical.extend([
+                "AWS_ACCESS_KEY",
+                "AWS_SECRET_KEY",
+                "AWS_REGION",
+                "S3_BUCKET_NAME",
+            ])
         
         # Add trading-specific critical settings if trading is enabled
         if cls.TRADING_ENABLED:
             critical.extend([
                 "BROKER_API_KEY",
-                "ASX_API_KEY",
                 "SNS_TOPIC_ARN"
             ])
         

@@ -5,8 +5,8 @@ import json
 import logging
 from datetime import datetime
 from openai import OpenAI
-from trading.config import Config
-from trading.utils import openai_rate_limiter
+from asx_trader.config import Config
+from asx_trader.utils import openai_rate_limiter
 
 logger = logging.getLogger(__name__)
 

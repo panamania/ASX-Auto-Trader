@@ -4,6 +4,7 @@ Utility functions including rate limiting for API calls.
 import time
 import logging
 import functools
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -42,3 +43,60 @@ class RateLimiter:
 # Create a global rate limiter for OpenAI API calls
 # Set to 20 calls per minute as a conservative default
 openai_rate_limiter = RateLimiter(calls_per_minute=20)
+
+def is_market_open():
+    """
+    Determine if the Australian market is currently open.
+    ASX trading hours are typically 10:00 AM to 4:00 PM AEST/AEDT Monday to Friday,
+    but this is a simplified version.
+    
+    Returns:
+        bool: True if market is open, False otherwise
+    """
+    now = datetime.datetime.now()
+    
+    # Check if it's a weekday (Monday=0, Sunday=6)
+    is_weekday = now.weekday() < 5
+    
+    # Australian market hours (simplified)
+    # ASX trading hours are 10:00 AM to 4:00 PM AEST/AEDT
+    hour = now.hour
+    is_trading_hours = 10 <= hour < 16
+    
+    # Return True if it's a weekday during trading hours
+    return is_weekday and is_trading_hours
+
+def get_next_run_time(interval_minutes=90):
+    """
+    Calculate the next run time based on the specified interval.
+    If the market will be closed at that time, adjust to the next market open time.
+    
+    Args:
+        interval_minutes: Number of minutes between runs (default: 90)
+        
+    Returns:
+        datetime: The next scheduled run time
+    """
+    now = datetime.datetime.now()
+    next_run = now + datetime.timedelta(minutes=interval_minutes)
+    
+    # If next run is on a weekend, move to Monday
+    if next_run.weekday() >= 5:  # Saturday or Sunday
+        days_to_add = 7 - next_run.weekday() + 0  # Days until Monday
+        next_run = next_run.replace(hour=10, minute=0) + datetime.timedelta(days=days_to_add)
+    
+    # If next run is outside trading hours on a weekday
+    elif next_run.hour < 10 or next_run.hour >= 16:
+        if next_run.hour < 10:
+            # If before market opens, set to market open time
+            next_run = next_run.replace(hour=10, minute=0)
+        else:
+            # If after market closes, set to next day's market open
+            next_run = (next_run + datetime.timedelta(days=1)).replace(hour=10, minute=0)
+            
+            # If next day is weekend, move to Monday
+            if next_run.weekday() >= 5:
+                days_to_add = 7 - next_run.weekday() + 0  # Days until Monday
+                next_run = next_run + datetime.timedelta(days=days_to_add)
+    
+    return next_run
