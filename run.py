@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Main script for the ASX Trader system with 90-minute scheduling.
@@ -8,6 +9,7 @@ import time
 import logging
 import datetime
 import argparse
+import traceback  # Added for better error tracking
 from dotenv import load_dotenv
 
 # Set up logging before imports
@@ -22,13 +24,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Now import modules
-from asx_trader.config import Config
-from asx_trader.news import ASXNewsCollector
-from asx_trader.market import MarketScanner
-from asx_trader.prediction import GPTEnhancedPredictionEngine
-from asx_trader.risk import RiskManagement
-from asx_trader.database import Database
-from asx_trader.utils import is_market_open, get_next_run_time
+try:
+    from asx_trader.config import Config
+    from asx_trader.news import ASXNewsCollector
+    from asx_trader.market import MarketScanner
+    from asx_trader.prediction import GPTEnhancedPredictionEngine
+    from asx_trader.risk import RiskManagement
+    from asx_trader.database import Database
+    from asx_trader.utils import is_market_open, get_next_run_time
+except Exception as e:
+    logger.error(f"Error importing modules: {e}")
+    traceback.print_exc()
+    sys.exit(1)
 
 def run_trading_cycle(args, db):
     """Run a single trading cycle"""
@@ -43,9 +50,16 @@ def run_trading_cycle(args, db):
     try:
         # Initialize components with minimal configuration
         news_collector = ASXNewsCollector()
+        logger.info("Created news collector")
+        
         market_scanner = MarketScanner()
+        logger.info("Created market scanner")
+        
         prediction_engine = GPTEnhancedPredictionEngine()
+        logger.info("Created prediction engine")
+        
         risk_management = RiskManagement()
+        logger.info("Created risk management")
         
         # 1. Get symbols to analyze (either from args or market scan)
         if args.symbols:
@@ -105,6 +119,7 @@ def run_trading_cycle(args, db):
         
     except Exception as e:
         logger.error(f"Error in trading cycle: {e}")
+        traceback.print_exc()  # Print full stack trace
         status = f"error:{str(e)}"
     
     end_time = datetime.datetime.now()
@@ -182,9 +197,11 @@ def main():
         logger.info("Trading system stopped by user")
     except Exception as e:
         logger.error(f"Unexpected error in main loop: {e}")
+        traceback.print_exc()  # Print full stack trace
     finally:
         # Close database connection
         db.close()
 
 if __name__ == "__main__":
     main()
+

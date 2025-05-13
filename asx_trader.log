@@ -1,0 +1,236 @@
+2025-05-13 01:54:59,645 - __main__ - INFO - Starting ASX Trader System
+2025-05-13 01:56:04,886 - __main__ - INFO - Starting ASX Trader System
+2025-05-13 01:56:04,915 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 01:56:04,915 - __main__ - INFO - Starting trading cycle at 2025-05-13 01:56:04.915177
+2025-05-13 01:56:04,915 - __main__ - ERROR - Error in trading cycle: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-05-13 01:56:04,915 - __main__ - INFO - Trading cycle completed at 2025-05-13 01:56:04.915550 (duration: 0:00:00.000373)
+2025-05-13 01:56:04,920 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:04.915614
+2025-05-13 02:11:42,690 - __main__ - INFO - Starting ASX Trader System
+2025-05-13 02:11:42,690 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 02:11:42,691 - __main__ - INFO - Starting trading cycle at 2025-05-13 02:11:42.691013
+2025-05-13 02:11:42,691 - __main__ - ERROR - Error in trading cycle: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-05-13 02:11:42,691 - __main__ - INFO - Trading cycle completed at 2025-05-13 02:11:42.691437 (duration: 0:00:00.000424)
+2025-05-13 02:11:42,696 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:42.691538
+2025-05-13 03:16:57,208 - __main__ - INFO - Applying OpenAI client patch...
+2025-05-13 03:16:57,538 - asx_trader.patch - INFO - Successfully patched OpenAI client
+2025-05-13 03:16:57,913 - __main__ - INFO - Starting ASX Trader System (Patched Version)
+2025-05-13 03:16:57,914 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 03:16:57,914 - __main__ - INFO - Starting trading cycle at 2025-05-13 03:16:57.914222
+2025-05-13 03:16:57,914 - __main__ - INFO - Created news collector
+2025-05-13 03:16:57,914 - __main__ - INFO - Created market scanner
+2025-05-13 03:16:57,914 - asx_trader.openai_client - ERROR - Error creating OpenAI client: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-05-13 03:16:57,914 - __main__ - ERROR - Error in trading cycle: Client.__init__() got an unexpected keyword argument 'proxies'
+2025-05-13 03:16:57,916 - __main__ - INFO - Trading cycle completed at 2025-05-13 03:16:57.916879 (duration: 0:00:00.002657)
+2025-05-13 03:16:57,922 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:57.916999
+2025-05-13 06:37:27,781 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 06:37:28,090 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 06:37:28,091 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 06:37:28,091 - __main__ - INFO - Starting trading cycle at 2025-05-13 06:37:28.091502
+2025-05-13 06:37:28,091 - __main__ - INFO - Created news collector
+2025-05-13 06:37:28,091 - __main__ - INFO - Created market scanner
+2025-05-13 06:37:28,091 - __main__ - INFO - Created prediction engine
+2025-05-13 06:37:28,091 - __main__ - INFO - Created risk management
+2025-05-13 06:37:28,091 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 06:37:28,243 - asx_trader.market - ERROR - Error fetching all market symbols: HTTPSConnectionPool(host='asx.api.example.com', port=443): Max retries exceeded with url: /symbols?limit=2000 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7aece0211790>: Failed to resolve 'asx.api.example.com' ([Errno -2] Name or service not known)"))
+2025-05-13 06:37:28,243 - __main__ - INFO - Using 0 symbols from market scan
+2025-05-13 06:37:28,243 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 06:37:28,246 - asx_trader.market - ERROR - Error fetching all market symbols: HTTPSConnectionPool(host='asx.api.example.com', port=443): Max retries exceeded with url: /symbols?limit=2000 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7aece0210ad0>: Failed to resolve 'asx.api.example.com' ([Errno -2] Name or service not known)"))
+2025-05-13 06:37:28,246 - asx_trader.market - WARNING - No symbols found for market data retrieval
+2025-05-13 06:37:28,246 - __main__ - INFO - Collected market data for 0 symbols
+2025-05-13 06:37:28,246 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 06:37:28,246 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 06:37:28,247 - __main__ - INFO - Collected 5 news items
+2025-05-13 06:37:28,247 - asx_trader.prediction - INFO - Analyzing news item 1/5: CEO of BHP Steps Down...
+2025-05-13 06:37:28,567 - asx_trader.prediction - INFO - Analyzing news item 2/5: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-13 06:37:31,862 - asx_trader.prediction - INFO - Analyzing news item 3/5: WES Reports Strong Quarterly Earnings...
+2025-05-13 06:37:35,168 - asx_trader.prediction - INFO - Analyzing news item 4/5: ANZ Reports Strong Quarterly Earnings...
+2025-05-13 06:37:38,487 - asx_trader.prediction - INFO - Analyzing news item 5/5: Analysts Downgrade ANZ on Growth Concerns...
+2025-05-13 06:37:41,773 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 06:37:41,779 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 06:37:45,076 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 06:37:45,076 - __main__ - ERROR - Error in trading cycle: 'NoneType' object is not subscriptable
+2025-05-13 06:37:45,077 - __main__ - INFO - Trading cycle completed at 2025-05-13 06:37:45.077632 (duration: 0:00:16.986130)
+2025-05-13 06:37:45,083 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:45.077771
+2025-05-13 06:39:59,483 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 06:39:59,780 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 06:39:59,781 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 06:39:59,781 - __main__ - INFO - Starting trading cycle at 2025-05-13 06:39:59.781564
+2025-05-13 06:39:59,781 - __main__ - INFO - Created news collector
+2025-05-13 06:39:59,781 - __main__ - INFO - Created market scanner
+2025-05-13 06:39:59,781 - __main__ - INFO - Created prediction engine
+2025-05-13 06:39:59,781 - __main__ - INFO - Created risk management
+2025-05-13 06:39:59,781 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 06:40:00,388 - asx_trader.market - ERROR - Error fetching all market symbols: 403 Client Error: Forbidden for url: https://yfapi.net/symbols?limit=2000
+2025-05-13 06:40:00,389 - __main__ - INFO - Using 0 symbols from market scan
+2025-05-13 06:40:00,390 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 06:40:00,994 - asx_trader.market - ERROR - Error fetching all market symbols: 403 Client Error: Forbidden for url: https://yfapi.net/symbols?limit=2000
+2025-05-13 06:40:00,996 - asx_trader.market - WARNING - No symbols found for market data retrieval
+2025-05-13 06:40:00,997 - __main__ - INFO - Collected market data for 0 symbols
+2025-05-13 06:40:00,997 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 06:40:00,997 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 06:40:00,997 - __main__ - INFO - Collected 5 news items
+2025-05-13 06:40:00,997 - asx_trader.prediction - INFO - Analyzing news item 1/5: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-13 06:40:01,287 - asx_trader.prediction - INFO - Analyzing news item 2/5: NAB Misses Earnings Expectations...
+2025-05-13 06:40:04,583 - asx_trader.prediction - INFO - Analyzing news item 3/5: ASX Market Update: Stocks Up on Economic Data...
+2025-05-13 06:40:07,895 - asx_trader.prediction - INFO - Analyzing news item 4/5: Analysts Upgrade CBA to Buy...
+2025-05-13 06:40:11,216 - asx_trader.prediction - INFO - Analyzing news item 5/5: ASX Market Update: Stocks Down on Economic Data...
+2025-05-13 06:40:14,508 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 06:40:14,514 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 06:40:17,811 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 06:40:17,811 - __main__ - ERROR - Error in trading cycle: 'NoneType' object is not subscriptable
+2025-05-13 06:40:17,812 - __main__ - INFO - Trading cycle completed at 2025-05-13 06:40:17.812181 (duration: 0:00:18.030617)
+2025-05-13 06:40:17,817 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:17.812349
+2025-05-13 06:43:01,286 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 06:43:01,658 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 06:43:01,659 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 06:43:01,659 - __main__ - INFO - Starting trading cycle at 2025-05-13 06:43:01.659755
+2025-05-13 06:43:01,659 - __main__ - INFO - Created news collector
+2025-05-13 06:43:01,660 - __main__ - INFO - Created market scanner
+2025-05-13 06:43:01,661 - __main__ - INFO - Created prediction engine
+2025-05-13 06:43:01,661 - __main__ - INFO - Created risk management
+2025-05-13 06:43:01,661 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 06:43:02,373 - asx_trader.market - ERROR - Error fetching all market symbols: 403 Client Error: Forbidden for url: https://yfapi.net/v1/finance/trending/AU/symbols?limit=2000
+2025-05-13 06:43:02,374 - __main__ - INFO - Using 0 symbols from market scan
+2025-05-13 06:43:02,375 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 06:43:02,980 - asx_trader.market - ERROR - Error fetching all market symbols: 403 Client Error: Forbidden for url: https://yfapi.net/v1/finance/trending/AU/symbols?limit=2000
+2025-05-13 06:43:02,982 - asx_trader.market - WARNING - No symbols found for market data retrieval
+2025-05-13 06:43:02,982 - __main__ - INFO - Collected market data for 0 symbols
+2025-05-13 06:43:02,982 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 06:43:02,983 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 06:43:02,983 - __main__ - INFO - Collected 5 news items
+2025-05-13 06:43:02,983 - asx_trader.prediction - INFO - Analyzing news item 1/5: BHP Reports Strong Quarterly Earnings...
+2025-05-13 06:43:03,319 - asx_trader.prediction - INFO - Analyzing news item 2/5: CSL Reports Strong Quarterly Earnings...
+2025-05-13 06:43:06,605 - asx_trader.prediction - INFO - Analyzing news item 3/5: TLS Reports Strong Quarterly Earnings...
+2025-05-13 06:43:09,905 - asx_trader.prediction - INFO - Analyzing news item 4/5: NAB Acquires Competitor to Expand Market Share...
+2025-05-13 06:43:13,221 - asx_trader.prediction - INFO - Analyzing news item 5/5: Analysts Downgrade FMG on Growth Concerns...
+2025-05-13 06:43:16,537 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 06:43:16,543 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 06:43:19,861 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 06:43:19,862 - __main__ - ERROR - Error in trading cycle: 'NoneType' object is not subscriptable
+2025-05-13 06:43:19,862 - __main__ - INFO - Trading cycle completed at 2025-05-13 06:43:19.862859 (duration: 0:00:18.203104)
+2025-05-13 06:43:19,868 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:19.863011
+2025-05-13 07:17:44,400 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 07:17:44,936 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 07:17:44,937 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 07:17:44,937 - __main__ - INFO - Starting trading cycle at 2025-05-13 07:17:44.937229
+2025-05-13 07:17:44,937 - __main__ - INFO - Created news collector
+2025-05-13 07:17:44,937 - __main__ - INFO - Created market scanner
+2025-05-13 07:17:44,937 - __main__ - INFO - Created prediction engine
+2025-05-13 07:17:44,937 - __main__ - INFO - Created risk management
+2025-05-13 07:17:44,937 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 07:17:44,937 - asx_trader.market - WARNING - _get_all_market_symbols is not supported by the Yahoo Finance API.
+2025-05-13 07:17:44,937 - __main__ - INFO - Using 0 symbols from market scan
+2025-05-13 07:17:44,937 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 07:17:44,937 - asx_trader.market - WARNING - _get_all_market_symbols is not supported by the Yahoo Finance API.
+2025-05-13 07:17:44,937 - asx_trader.market - WARNING - No symbols found for market data retrieval
+2025-05-13 07:17:44,937 - __main__ - INFO - Collected market data for 0 symbols
+2025-05-13 07:17:44,937 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 07:17:44,938 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 07:17:44,938 - __main__ - INFO - Collected 5 news items
+2025-05-13 07:17:44,938 - asx_trader.prediction - INFO - Analyzing news item 1/5: CEO of ANZ Steps Down...
+2025-05-13 07:17:45,233 - asx_trader.prediction - INFO - Analyzing news item 2/5: NAB Misses Earnings Expectations...
+2025-05-13 07:17:48,527 - asx_trader.prediction - INFO - Analyzing news item 3/5: WBC Reports Strong Quarterly Earnings...
+2025-05-13 07:17:51,848 - asx_trader.prediction - INFO - Analyzing news item 4/5: RIO Misses Earnings Expectations...
+2025-05-13 07:17:55,157 - asx_trader.prediction - INFO - Analyzing news item 5/5: BHP Acquires Competitor to Expand Market Share...
+2025-05-13 07:17:58,446 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 07:17:58,452 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 07:18:01,770 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 07:18:01,771 - __main__ - ERROR - Error in trading cycle: 'NoneType' object is not subscriptable
+2025-05-13 07:18:01,772 - __main__ - INFO - Trading cycle completed at 2025-05-13 07:18:01.772785 (duration: 0:00:16.835556)
+2025-05-13 07:18:01,779 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:01.772946
+2025-05-13 07:21:22,075 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 07:21:22,397 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 07:21:22,398 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 07:21:22,398 - __main__ - INFO - Starting trading cycle at 2025-05-13 07:21:22.398937
+2025-05-13 07:21:22,399 - __main__ - INFO - Created news collector
+2025-05-13 07:21:22,399 - __main__ - INFO - Created market scanner
+2025-05-13 07:21:22,399 - __main__ - INFO - Created prediction engine
+2025-05-13 07:21:22,399 - __main__ - INFO - Created risk management
+2025-05-13 07:21:22,399 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 07:21:22,399 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 07:21:23,201 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 07:21:23,201 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 07:21:23,925 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 07:21:23,925 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 07:21:23,925 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 07:21:23,925 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 07:21:23,925 - __main__ - INFO - Collected 5 news items
+2025-05-13 07:21:23,925 - asx_trader.prediction - INFO - Analyzing news item 1/5: Analysts Upgrade ^AORD to Buy...
+2025-05-13 07:21:24,213 - asx_trader.prediction - INFO - Analyzing news item 2/5: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-13 07:21:27,510 - asx_trader.prediction - INFO - Analyzing news item 3/5: ^AORD Misses Earnings Expectations...
+2025-05-13 07:21:30,802 - asx_trader.prediction - INFO - Analyzing news item 4/5: CEO of ^AORD Steps Down...
+2025-05-13 07:21:34,103 - asx_trader.prediction - INFO - Analyzing news item 5/5: Analysts Upgrade ^AORD to Buy...
+2025-05-13 07:21:37,395 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 07:21:37,401 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 07:21:40,700 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 07:21:40,700 - __main__ - ERROR - Error in trading cycle: 'NoneType' object is not subscriptable
+2025-05-13 07:21:40,701 - __main__ - INFO - Trading cycle completed at 2025-05-13 07:21:40.701333 (duration: 0:00:18.302396)
+2025-05-13 07:21:40,707 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:40.701486
+2025-05-13 07:29:14,830 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 07:29:15,139 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead.", 'type': 'invalid_request_error', 'param': 'max_tokens', 'code': 'unsupported_parameter'}
+2025-05-13 07:29:15,139 - __main__ - INFO - OpenAI curl client test successful: None
+2025-05-13 07:29:15,139 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 07:29:15,139 - __main__ - INFO - Starting trading cycle at 2025-05-13 07:29:15.139873
+2025-05-13 07:29:15,139 - __main__ - INFO - Created news collector
+2025-05-13 07:29:15,139 - __main__ - INFO - Created market scanner
+2025-05-13 07:29:15,140 - __main__ - INFO - Created prediction engine
+2025-05-13 07:29:15,140 - __main__ - INFO - Created risk management
+2025-05-13 07:29:15,140 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 07:29:15,140 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 07:29:15,894 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 07:29:15,894 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 07:29:16,625 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 07:29:16,625 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 07:29:16,625 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 07:29:16,625 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 07:29:16,625 - __main__ - INFO - Collected 5 news items
+2025-05-13 07:29:16,625 - asx_trader.prediction - INFO - Analyzing news item 1/5: CEO of ^AORD Steps Down...
+2025-05-13 07:29:16,940 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_value'}
+2025-05-13 07:29:16,940 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 07:29:16,940 - asx_trader.prediction - INFO - Analyzing news item 2/5: ^AORD Misses Earnings Expectations...
+2025-05-13 07:29:20,233 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_value'}
+2025-05-13 07:29:20,233 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 07:29:20,233 - asx_trader.prediction - INFO - Analyzing news item 3/5: CEO of ^AORD Steps Down...
+2025-05-13 07:29:23,561 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_value'}
+2025-05-13 07:29:23,562 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 07:29:23,562 - asx_trader.prediction - INFO - Analyzing news item 4/5: ^AORD Acquires Competitor to Expand Market Share...
+2025-05-13 07:29:26,870 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_value'}
+2025-05-13 07:29:26,870 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 07:29:26,870 - asx_trader.prediction - INFO - Analyzing news item 5/5: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 07:29:30,193 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_value'}
+2025-05-13 07:29:30,193 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 07:29:30,193 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 07:29:30,199 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 07:29:33,505 - asx_trader.curl_openai - ERROR - API error: {'message': "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_value'}
+2025-05-13 07:29:33,505 - asx_trader.risk - ERROR - Error during risk assessment: the JSON object must be str, bytes or bytearray, not NoneType
+2025-05-13 07:29:33,505 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 07:29:33,505 - __main__ - INFO - Trading cycle completed at 2025-05-13 07:29:33.505805 (duration: 0:00:18.365932)
+2025-05-13 07:29:33,511 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 10:00:33.505900
+2025-05-13 10:25:26,876 - __main__ - ERROR - Error importing modules: cannot import name 'RiskManagement' from 'asx_trader.risk' (/home/ubuntu/apps/ASX-Auto-Trader/asx_trader/risk.py)
+2025-05-13 10:29:15,216 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 10:29:15,843 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 10:29:15,844 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 10:29:15,844 - __main__ - INFO - Starting trading cycle at 2025-05-13 10:29:15.844318
+2025-05-13 10:29:15,844 - __main__ - INFO - Created news collector
+2025-05-13 10:29:15,844 - __main__ - INFO - Created market scanner
+2025-05-13 10:29:15,844 - __main__ - INFO - Created prediction engine
+2025-05-13 10:29:15,844 - __main__ - INFO - Created risk management
+2025-05-13 10:29:15,844 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 10:29:15,844 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 10:29:16,660 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 10:29:16,661 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 10:29:17,340 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 10:29:17,340 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 10:29:17,340 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 10:29:17,340 - asx_trader.news - INFO - Generated 5 mock news items
+2025-05-13 10:29:17,340 - __main__ - INFO - Collected 5 news items
+2025-05-13 10:29:17,340 - asx_trader.prediction - INFO - Analyzing news item 1/5: ^AORD Misses Earnings Expectations...
+2025-05-13 10:29:19,697 - asx_trader.prediction - INFO - Analyzing news item 2/5: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 10:29:27,183 - asx_trader.prediction - INFO - Analyzing news item 3/5: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 10:29:33,083 - asx_trader.prediction - INFO - Analyzing news item 4/5: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 10:29:40,544 - asx_trader.prediction - INFO - Analyzing news item 5/5: CEO of ^AORD Steps Down...
+2025-05-13 10:29:47,121 - __main__ - INFO - Generated 5 trading signals
+2025-05-13 10:29:47,129 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-13 10:29:57,159 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 10:29:57,159 - __main__ - INFO - Trading cycle completed at 2025-05-13 10:29:57.159660 (duration: 0:00:41.315342)
+2025-05-13 10:29:57,165 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 11:59:57.159762

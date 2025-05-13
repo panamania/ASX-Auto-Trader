@@ -5,6 +5,7 @@ import os
 import sqlite3
 import logging
 from datetime import datetime
+from asx_trader.config import Config
 
 logger = logging.getLogger(__name__)
 

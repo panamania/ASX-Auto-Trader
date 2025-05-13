@@ -1,3 +1,4 @@
+
 """
 Configuration module for the trading system.
 """
@@ -44,7 +45,6 @@ class Config:
         # Critical settings that must be present
         critical = [
             "OPENAI_API_KEY",
-            "ASX_API_KEY",
         ]
         
         # Add AWS settings if configured
@@ -60,6 +60,7 @@ class Config:
         if cls.TRADING_ENABLED:
             critical.extend([
                 "BROKER_API_KEY",
+                "ASX_API_KEY",
                 "SNS_TOPIC_ARN"
             ])
         

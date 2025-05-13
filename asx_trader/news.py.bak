@@ -1,0 +1,102 @@
+"""
+News collector module for ASX stock news.
+"""
+import logging
+import requests
+from asx_trader.config import Config
+
+logger = logging.getLogger(__name__)
+
+class ASXNewsCollector:
+    """Collects news from ASX"""
+    def __init__(self):
+        self.api_key = Config.ASX_API_KEY
+        self.base_url = "https://asx.api.example.com"  # Replace with actual ASX API endpoint
+        
+    def fetch_latest_news(self, symbols=None, limit=None, market_wide=True):
+        """
+        Fetch latest news for specified stock symbols or market-wide news.
+        
+        Args:
+            symbols: Optional list of symbols to fetch news for.
+            limit: Maximum number of news items to return.
+            market_wide: Whether to include market-wide news.
+            
+        Returns:
+            list: List of news items
+        """
+        logger.info(f"Fetching news for {'market-wide' if market_wide else symbols}")
+        
+        try:
+            # Set default limit based on whether we're doing market-wide or specific symbols
+            if limit is None:
+                limit = 200 if market_wide else 50
+                
+            params = {"limit": limit}
+            
+            # Add symbols parameter if provided and not doing market_wide only
+            if symbols and not market_wide:
+                params["symbols"] = ",".join(symbols)
+                
+            # Add market_wide parameter
+            params["market_wide"] = "true" if market_wide else "false"
+                
+            response = requests.get(
+                f"{self.base_url}/news", 
+                params=params,
+                headers={"Authorization": f"Bearer {self.api_key}"}
+            )
+            response.raise_for_status()
+            news_items = response.json()
+            
+            logger.info(f"Fetched {len(news_items)} news items")
+            return news_items
+            
+        except Exception as e:
+            logger.error(f"Error fetching ASX news: {e}")
+            return []
+            
+    def fetch_specific_symbol_news(self, symbol, limit=20):
+        """
+        Fetch news specifically for a given symbol.
+        
+        Args:
+            symbol: The stock symbol to fetch news for.
+            limit: Maximum number of news items to return.
+            
+        Returns:
+            list: List of news items for the symbol
+        """
+        logger.info(f"Fetching specific news for {symbol}")
+        
+        try:
+            response = requests.get(
+                f"{self.base_url}/news/symbol/{symbol}", 
+                params={"limit": limit},
+                headers={"Authorization": f"Bearer {self.api_key}"}
+            )
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Error fetching news for {symbol}: {e}")
+            return []
+            
+    def fetch_market_summaries(self):
+        """
+        Fetch market summary news and reports.
+        
+        Returns:
+            list: List of market summary news items
+        """
+        logger.info("Fetching market summaries")
+        
+        try:
+            response = requests.get(
+                f"{self.base_url}/news/market-summary", 
+                headers={"Authorization": f"Bearer {self.api_key}"}
+            )
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Error fetching market summaries: {e}")
+            return []
