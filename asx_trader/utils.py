@@ -1,3 +1,4 @@
+
 """
 Utility functions including rate limiting for API calls.
 """
@@ -100,3 +101,4 @@ def get_next_run_time(interval_minutes=90):
                 next_run = next_run + datetime.timedelta(days=days_to_add)
     
     return next_run
+

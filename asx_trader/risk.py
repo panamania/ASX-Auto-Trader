@@ -4,16 +4,15 @@ Risk management module for trading system.
 import json
 import logging
 from datetime import datetime
-from openai import OpenAI
-from asx_trader.config import Config
 from asx_trader.utils import openai_rate_limiter
+from asx_trader.curl_openai import openai_client
 
 logger = logging.getLogger(__name__)
 
 class RiskManagement:
     """Assesses market conditions and generates risk summaries"""
     def __init__(self):
-        self.client = OpenAI(api_key=Config.OPENAI_API_KEY)
+        self.client = openai_client
         
     def assess_market_risk(self, symbols, signals, market_data=None):
         """
@@ -80,14 +79,32 @@ class RiskManagement:
             Format the response as JSON.
             """
             
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completion(
                 model="o4-mini",
                 messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
-                temperature=0.2
+                response_format={"type": "json_object"}
             )
             
-            risk_assessment = json.loads(response.choices[0].message.content)
+            # Parse the response
+            content = response.get("content", "")
+            
+            # Parse with error handling
+            try:
+                if content and content.strip():
+                    risk_assessment = json.loads(content)
+                else:
+                    logger.warning("Empty response content from API for risk assessment")
+                    risk_assessment = {
+                        "overall_risk_level": "Medium",
+                        "error": "No assessment available due to empty API response"
+                    }
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse JSON response for risk assessment: {e}")
+                logger.error(f"Raw content: {content}")
+                risk_assessment = {
+                    "overall_risk_level": "Unknown",
+                    "error": f"Error parsing response: {str(e)}"
+                }
             
             # Add the market data we used
             risk_assessment["market_data"] = market_data

@@ -1,184 +1,99 @@
-"""
-Market scanning and data aggregation functions.
-"""
 import logging
 import requests
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
-from trading.config import Config
+from asx_trader.config import Config
 
 logger = logging.getLogger(__name__)
 
 class MarketScanner:
     """Scans the market for opportunities and gathers market data."""
-    
+
     def __init__(self):
         self.api_key = Config.ASX_API_KEY
-        self.base_url = "https://asx.api.example.com"  # Replace with actual ASX API endpoint
+        self.base_url = "https://yfapi.net"
         self.scan_mode = Config.MARKET_SCAN_MODE
         self.sector_focus = Config.MARKET_SECTOR_FOCUS
         self.min_market_cap = Config.MIN_MARKET_CAP
         self.max_stocks = Config.MAX_STOCKS_TO_ANALYZE
-        
+
     def get_market_symbols(self):
         """
         Get the list of stock symbols to analyze based on configuration.
-        
+
         Returns:
             list: List of stock symbols meeting the criteria
         """
         logger.info(f"Getting market symbols with scan mode: {self.scan_mode}")
-        
+
         try:
-            if self.scan_mode == "full":
-                # Get all ASX-listed stocks
-                return self._get_all_market_symbols()
-            elif self.scan_mode == "sector":
-                # Get stocks in specific sector
+            if self.scan_mode == "sector":
                 return self._get_sector_symbols(self.sector_focus)
             elif self.scan_mode == "filtered":
-                # Get stocks matching specific filters
                 return self._get_filtered_symbols()
+            elif self.scan_mode == "trending":
+                return self._get_trending_symbols()
             else:
-                # Default to all symbols
-                return self._get_all_market_symbols()
+                logger.warning(f"Unknown scan mode '{self.scan_mode}', defaulting to trending symbols.")
+                return self._get_trending_symbols()
         except Exception as e:
             logger.error(f"Error getting market symbols: {e}")
             return []
-            
-    def _get_all_market_symbols(self):
-        """Get all symbols from the market."""
+
+    def _get_trending_symbols(self):
+        """Get trending symbols using Yahoo Finance API."""
         try:
             response = requests.get(
-                f"{self.base_url}/symbols", 
-                params={"limit": 2000},  # Assuming max 2000 stocks
-                headers={"Authorization": f"Bearer {self.api_key}"}
+                f"{self.base_url}/v1/finance/trending/AU",
+                headers={"x-api-key": self.api_key, "accept": "application/json"}
             )
             response.raise_for_status()
-            
-            # Extract symbols
-            symbols_data = response.json()
-            
-            # Filter by market cap if needed
-            if self.min_market_cap > 0:
-                symbols_data = [
-                    s for s in symbols_data 
-                    if s.get("market_cap", 0) >= self.min_market_cap
-                ]
-                
-            # Sort by market cap (largest first)
-            symbols_data.sort(key=lambda x: x.get("market_cap", 0), reverse=True)
-            
-            # Limit to max stocks to analyze
-            symbols_data = symbols_data[:self.max_stocks]
-            
-            # Return the symbol codes
-            return [s.get("symbol") for s in symbols_data]
-            
-        except Exception as e:
-            logger.error(f"Error fetching all market symbols: {e}")
+            data = response.json()
+            quotes = data.get("finance", {}).get("result", [])
+            if quotes and "quotes" in quotes[0]:
+                trending_symbols = [item["symbol"] for item in quotes[0]["quotes"]]
+                return trending_symbols[:self.max_stocks]
             return []
-            
+        except Exception as e:
+            logger.error(f"Error fetching trending symbols: {e}")
+            return []
+
     def _get_sector_symbols(self, sector):
-        """Get symbols for a specific sector."""
-        try:
-            response = requests.get(
-                f"{self.base_url}/sectors/{sector}/symbols", 
-                headers={"Authorization": f"Bearer {self.api_key}"}
-            )
-            response.raise_for_status()
-            
-            # Extract symbols
-            symbols_data = response.json()
-            
-            # Filter by market cap if needed
-            if self.min_market_cap > 0:
-                symbols_data = [
-                    s for s in symbols_data 
-                    if s.get("market_cap", 0) >= self.min_market_cap
-                ]
-                
-            # Sort by market cap (largest first)
-            symbols_data.sort(key=lambda x: x.get("market_cap", 0), reverse=True)
-            
-            # Limit to max stocks to analyze
-            symbols_data = symbols_data[:self.max_stocks]
-            
-            # Return the symbol codes
-            return [s.get("symbol") for s in symbols_data]
-            
-        except Exception as e:
-            logger.error(f"Error fetching sector symbols for {sector}: {e}")
-            return []
-            
+        logger.warning("_get_sector_symbols is not supported by the Yahoo Finance API.")
+        return []
+
     def _get_filtered_symbols(self):
-        """Get symbols based on custom filters."""
-        try:
-            # Define filter criteria
-            filters = {
-                "min_market_cap": self.min_market_cap,
-                "min_volume": 100000,  # Example filter for minimum volume
-                "has_options": True,    # Example filter for stocks with options
-            }
-            
-            response = requests.get(
-                f"{self.base_url}/screener", 
-                params=filters,
-                headers={"Authorization": f"Bearer {self.api_key}"}
-            )
-            response.raise_for_status()
-            
-            # Extract symbols
-            symbols_data = response.json()
-            
-            # Sort by market cap (largest first)
-            symbols_data.sort(key=lambda x: x.get("market_cap", 0), reverse=True)
-            
-            # Limit to max stocks to analyze
-            symbols_data = symbols_data[:self.max_stocks]
-            
-            # Return the symbol codes
-            return [s.get("symbol") for s in symbols_data]
-            
-        except Exception as e:
-            logger.error(f"Error fetching filtered symbols: {e}")
-            return []
-            
+        logger.warning("_get_filtered_symbols is not supported by the Yahoo Finance API.")
+        return []
+
     def get_market_data(self, symbols=None):
         """
         Get market data for given symbols or all scanned symbols.
-        
+
         Args:
-            symbols: Optional list of symbols to get data for. 
+            symbols: Optional list of symbols to get data for.
                     If None, uses the configured scan method.
-                    
+
         Returns:
             dict: Dictionary of market data keyed by symbol
         """
         if not symbols:
             symbols = self.get_market_symbols()
-            
+
         if not symbols:
             logger.warning("No symbols found for market data retrieval")
             return {}
-            
+
         logger.info(f"Getting market data for {len(symbols)} symbols")
-        
-        # Use ThreadPoolExecutor for parallel requests
+
         market_data = {}
-        
-        # Define the max number of workers
-        max_workers = min(20, len(symbols))  # Limit to 20 concurrent requests
-        
-        # Fetch data in parallel
+        max_workers = min(20, len(symbols))
+
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # Create a map of futures to symbols
             future_to_symbol = {
                 executor.submit(self._get_symbol_data, symbol): symbol
                 for symbol in symbols
             }
-            
-            # Process results as they complete
             for future in future_to_symbol:
                 symbol = future_to_symbol[future]
                 try:
@@ -187,78 +102,65 @@ class MarketScanner:
                         market_data[symbol] = data
                 except Exception as e:
                     logger.error(f"Error getting data for {symbol}: {e}")
-        
+
         logger.info(f"Retrieved market data for {len(market_data)} symbols")
         return market_data
-        
+
     def _get_symbol_data(self, symbol):
-        """Get market data for a single symbol."""
+        """Get market data for a single symbol using Yahoo Finance API."""
         try:
             response = requests.get(
-                f"{self.base_url}/quotes/{symbol}", 
-                headers={"Authorization": f"Bearer {self.api_key}"}
+                f"{self.base_url}/v6/finance/quote",
+                params={"symbols": symbol},
+                headers={"x-api-key": self.api_key, "accept": "application/json"}
             )
             response.raise_for_status()
-            
-            return response.json()
+            data = response.json().get("quoteResponse", {}).get("result", [])
+            return data[0] if data else None
         except Exception as e:
             logger.error(f"Error fetching data for {symbol}: {e}")
             return None
-            
+
     def find_opportunities(self, market_data=None):
         """
         Scan the market to find trading opportunities.
-        
-        This is a pre-filtering step before detailed GPT analysis.
-        
+
         Args:
             market_data: Optional pre-loaded market data. If None, fetches new data.
-            
+
         Returns:
             list: List of symbols that represent potential opportunities
         """
         if not market_data:
             market_data = self.get_market_data()
-            
+
         if not market_data:
             return []
-            
+
         logger.info(f"Scanning {len(market_data)} stocks for opportunities")
-        
-        # Convert to DataFrame for easier filtering
         df = pd.DataFrame.from_dict(market_data, orient='index')
-        
-        # Apply opportunity filters
-        # These are example filters - customize based on your strategy
         opportunities = []
-        
+
         try:
-            # Significant volume increase
-            if 'volume' in df.columns and 'avg_volume' in df.columns:
-                volume_filter = df['volume'] > df['avg_volume'] * 1.5
+            if 'volume' in df.columns and 'averageDailyVolume3Month' in df.columns:
+                volume_filter = df['volume'] > df['averageDailyVolume3Month'] * 1.5
                 opportunities.extend(df[volume_filter].index.tolist())
-                
-            # Price near 52-week high/low
-            if 'price' in df.columns and '52w_high' in df.columns and '52w_low' in df.columns:
-                # Near high (within 5%)
-                high_filter = df['price'] >= df['52w_high'] * 0.95
+
+            if 'regularMarketPrice' in df.columns and 'fiftyTwoWeekHigh' in df.columns and 'fiftyTwoWeekLow' in df.columns:
+                high_filter = df['regularMarketPrice'] >= df['fiftyTwoWeekHigh'] * 0.95
                 opportunities.extend(df[high_filter].index.tolist())
-                
-                # Near low (within 5%)
-                low_filter = df['price'] <= df['52w_low'] * 1.05
+
+                low_filter = df['regularMarketPrice'] <= df['fiftyTwoWeekLow'] * 1.05
                 opportunities.extend(df[low_filter].index.tolist())
-                
-            # Unusual price movement
-            if 'price_change_pct' in df.columns:
-                movement_filter = abs(df['price_change_pct']) >= 0.03  # 3% or more
+
+            if 'regularMarketChangePercent' in df.columns:
+                movement_filter = abs(df['regularMarketChangePercent']) >= 3.0
                 opportunities.extend(df[movement_filter].index.tolist())
-            
-            # De-duplicate
+
             opportunities = list(set(opportunities))
-            
             logger.info(f"Found {len(opportunities)} potential opportunities")
             return opportunities
-            
         except Exception as e:
             logger.error(f"Error finding opportunities: {e}")
             return []
+

@@ -4,16 +4,15 @@ GPT-enhanced prediction engine for news analysis.
 import json
 import logging
 from datetime import datetime
-from openai import OpenAI
-from asx_trader.config import Config
 from asx_trader.utils import openai_rate_limiter
+from asx_trader.curl_openai import openai_client
 
 logger = logging.getLogger(__name__)
 
 class GPTEnhancedPredictionEngine:
     """Analyzes news and generates trading signals using GPT"""
     def __init__(self):
-        self.client = OpenAI(api_key=Config.OPENAI_API_KEY)
+        self.client = openai_client
         
     def analyze_news(self, news_items):
         """Analyze news items and return trading signals"""
@@ -48,15 +47,33 @@ class GPTEnhancedPredictionEngine:
             Format response as JSON with fields: signal, confidence, reasoning
             """
             
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completion(
                 model="o4-mini",  # Using o4-mini as specified
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"},
-                temperature=0.2  # Lower temperature for more consistent results
+                # Note: removing temperature parameter to use default (1)
             )
             
-            # Parse the response
-            analysis = json.loads(response.choices[0].message.content)
+            # Get the content
+            content = response.get("content", "")
+            logger.debug(f"Raw response content: {content}")
+            
+            # Parse the response with error handling
+            try:
+                if content and content.strip():
+                    analysis = json.loads(content)
+                else:
+                    logger.warning("Empty response content from API")
+                    analysis = {"signal": "HOLD", "confidence": "low", "reasoning": "No analysis available due to empty API response"}
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse JSON response: {e}")
+                logger.error(f"Raw content: {content}")
+                # Create a default analysis
+                analysis = {
+                    "signal": "HOLD", 
+                    "confidence": "low",
+                    "reasoning": f"Error parsing response: {str(e)}. Raw content: {content[:100]}"
+                }
             
             # Add to results
             result = {
@@ -73,4 +90,13 @@ class GPTEnhancedPredictionEngine:
                 
         except Exception as e:
             logger.error(f"Error in API call to analyze news: {e}")
-            return None
+            # Return a minimal valid result instead of None
+            return {
+                "news_id": news.get("id", "unknown"),
+                "headline": news.get("headline", "unknown"),
+                "symbols": news.get("symbols", []),
+                "signal": "ERROR",
+                "confidence": "none",
+                "reasoning": f"API error: {str(e)}",
+                "analysis_time": datetime.now().isoformat()
+            }
