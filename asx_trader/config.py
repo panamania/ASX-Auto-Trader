@@ -1,8 +1,8 @@
-
 """
 Configuration module for the trading system.
 """
 import os
+import logging
 from dotenv import load_dotenv
 
 # Ensure environment variables are loaded
@@ -13,8 +13,14 @@ class Config:
     
     # API Keys
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+    FINANCE_API_KEY = os.environ.get("FINANCE_API_KEY")
+    NEWSDATA_API_KEY = os.environ.get("NEWSDATA_API_KEY")
     ASX_API_KEY = os.environ.get("ASX_API_KEY")
     BROKER_API_KEY = os.environ.get("BROKER_API_KEY")
+    
+    # API URLs
+    ASX_API_URL = os.environ.get("ASX_API_URL")
+    BROKER_API_URL = os.environ.get("BROKER_API_URL")
     
     # AWS Configuration
     AWS_ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY")
@@ -26,7 +32,7 @@ class Config:
     # Market Scanning Configuration
     MARKET_SCAN_MODE = os.environ.get("MARKET_SCAN_MODE", "full")
     MARKET_SECTOR_FOCUS = os.environ.get("MARKET_SECTOR_FOCUS", "")
-    MAX_STOCKS_TO_ANALYZE = int(os.environ.get("MAX_STOCKS_TO_ANALYZE", "100"))
+    MAX_STOCKS_TO_ANALYZE = int(os.environ.get("MAX_STOCKS_TO_ANALYZE", "30"))
     MIN_MARKET_CAP = float(os.environ.get("MIN_MARKET_CAP", "1000000"))
     
     # Trading Configuration
@@ -60,7 +66,6 @@ class Config:
         if cls.TRADING_ENABLED:
             critical.extend([
                 "BROKER_API_KEY",
-                "ASX_API_KEY",
                 "SNS_TOPIC_ARN"
             ])
         
@@ -81,4 +86,11 @@ class Config:
         if cls.MARKET_SCAN_MODE == "sector" and not cls.MARKET_SECTOR_FOCUS:
             raise ValueError("MARKET_SECTOR_FOCUS must be specified when using sector scan mode")
         
+        # Log warnings for optional API keys
+        if not cls.FINANCE_API_KEY:
+            logger.warning("FINANCE_API_KEY not set. Will use mock market data.")
+        if not cls.NEWSDATA_API_KEY:
+            logger.warning("NEWSDATA_API_KEY not set. Will use mock news data.")
+        
         return True
+

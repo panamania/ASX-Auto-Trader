@@ -10,7 +10,6 @@ import logging
 import datetime
 import argparse
 import traceback
-import pytz
 from dotenv import load_dotenv
 
 # Set up logging early
@@ -68,9 +67,8 @@ def run_trading_cycle(args, db):
             symbols = args.symbols.split(",")
             logger.info(f"Using provided symbols: {symbols}")
         else:
-            # Get symbols from the market scanner
+            # Limit number of symbols for POC
             all_symbols = market_scanner.get_market_symbols()
-            logger.info(f"Retrieved {len(all_symbols)} ASX symbols")
             symbols = all_symbols[:args.max_symbols]
             logger.info(f"Using {len(symbols)} symbols from market scan")
         
@@ -116,15 +114,18 @@ def run_trading_cycle(args, db):
         
         print("\nTop Trading Signals:")
         for i, signal in enumerate(signals[:5], 1):
-            symbol = signal.get("symbols", ["MARKET"])[0] if signal.get("symbols") else "MARKET"
-            signal_type = signal.get("signal", "NONE")
-            confidence = signal.get("confidence", "NONE")
-            reason = signal.get("reasoning", "")[:150] + "..." if signal.get("reasoning", "") else "No reasoning provided"
+            # Safely get values with defaults for None
+            symbol_list = signal.get("symbols", [])
+            symbol_str = ", ".join(symbol_list) if symbol_list else "Unknown"
+            signal_type = signal.get("signal") or "Unknown"
+            confidence = signal.get("confidence") or "Unknown"
+            reasoning = signal.get("reasoning") or "No reasoning provided"
             
-            print(f"{i}. {symbol} - {signal_type} ({confidence})")
-            print(f"   News: {signal.get('headline', '')[:80]}...")
-            print(f"   Reason: {reason}")
-            print()
+            # Safely get substring
+            reasoning_summary = reasoning[:100] + "..." if len(reasoning) > 100 else reasoning
+            
+            print(f"{i}. {symbol_str} - {signal_type} ({confidence})")
+            print(f"   Reason: {reasoning_summary}")
         
     except Exception as e:
         logger.error(f"Error in trading cycle: {e}")
@@ -156,7 +157,8 @@ def main():
     try:
         test_response = openai_client.chat_completion(
             model="o4-mini",
-            messages=[{"role": "user", "content": "Say hello"}]
+            messages=[{"role": "user", "content": "Say hello"}],
+            max_tokens=10
         )
         logger.info(f"OpenAI curl client test successful: {test_response.get('content', '')}")
     except Exception as e:
@@ -205,8 +207,7 @@ def main():
                 )
                 
                 # Calculate wait time until next run
-                aest = pytz.timezone("Australia/Sydney")
-                wait_seconds = (next_run - datetime.datetime.now(aest)).total_seconds()
+                wait_seconds = (next_run - datetime.datetime.now()).total_seconds()
                 logger.info(f"Next run scheduled at {next_run} (waiting {wait_seconds/60:.1f} minutes)")
                 
                 # Wait until next run time

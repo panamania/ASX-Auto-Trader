@@ -234,3 +234,412 @@
 2025-05-13 10:29:57,159 - __main__ - INFO - Completed risk assessment: unknown risk
 2025-05-13 10:29:57,159 - __main__ - INFO - Trading cycle completed at 2025-05-13 10:29:57.159660 (duration: 0:00:41.315342)
 2025-05-13 10:29:57,165 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 11:59:57.159762
+2025-05-13 11:17:35,203 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 11:17:35,580 - asx_trader.curl_openai - ERROR - API error: {'message': 'Incorrect API key provided: sk-proj-********************************************************************************************************************************************************55QA. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}
+2025-05-13 11:17:35,580 - __main__ - INFO - OpenAI curl client test successful: None
+2025-05-13 11:17:35,581 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 11:17:35,581 - __main__ - INFO - Starting trading cycle at 2025-05-13 11:17:35.581341
+2025-05-13 11:17:35,581 - __main__ - INFO - Created news collector
+2025-05-13 11:17:35,581 - __main__ - INFO - Created market scanner
+2025-05-13 11:17:35,581 - __main__ - INFO - Created prediction engine
+2025-05-13 11:17:35,581 - __main__ - INFO - Created risk management
+2025-05-13 11:17:35,581 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 11:17:35,581 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 11:17:36,464 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 11:17:36,465 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 11:17:37,148 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 11:17:37,148 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 11:17:37,148 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 11:17:37,149 - asx_trader.news - INFO - Generated 10 mock news items
+2025-05-13 11:17:37,149 - __main__ - INFO - Collected 10 news items
+2025-05-13 11:17:37,149 - asx_trader.prediction - INFO - Analyzing news item 1/10: Analysts Upgrade ^AORD to Buy...
+2025-05-13 11:17:37,428 - asx_trader.curl_openai - ERROR - API error: {'message': 'Incorrect API key provided: sk-proj-********************************************************************************************************************************************************55QA. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}
+2025-05-13 11:17:37,428 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 11:17:37,429 - asx_trader.prediction - INFO - Analyzing news item 2/10: CEO of ^AORD Steps Down...
+2025-05-13 11:17:40,700 - asx_trader.curl_openai - ERROR - API error: {'message': 'Incorrect API key provided: sk-proj-********************************************************************************************************************************************************55QA. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}
+2025-05-13 11:17:40,700 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 11:17:40,700 - asx_trader.prediction - INFO - Analyzing news item 3/10: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-13 11:17:43,999 - asx_trader.curl_openai - ERROR - API error: {'message': 'Incorrect API key provided: sk-proj-********************************************************************************************************************************************************55QA. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}
+2025-05-13 11:17:43,999 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-13 11:17:43,999 - asx_trader.prediction - INFO - Analyzing news item 4/10: ASX Market Update: Stocks Down on Economic Data...
+2025-05-13 11:17:47,270 - __main__ - INFO - Trading system stopped by user
+2025-05-13 11:20:21,311 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 11:20:22,843 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 11:20:22,844 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 11:20:22,844 - __main__ - INFO - Starting trading cycle at 2025-05-13 11:20:22.844828
+2025-05-13 11:20:22,844 - __main__ - INFO - Created news collector
+2025-05-13 11:20:22,845 - __main__ - INFO - Created market scanner
+2025-05-13 11:20:22,845 - __main__ - INFO - Created prediction engine
+2025-05-13 11:20:22,845 - __main__ - INFO - Created risk management
+2025-05-13 11:20:22,845 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 11:20:22,845 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 11:20:23,599 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 11:20:23,600 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 11:20:24,339 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 11:20:24,339 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 11:20:24,339 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 11:20:24,339 - asx_trader.news - INFO - Generated 10 mock news items
+2025-05-13 11:20:24,339 - __main__ - INFO - Collected 10 news items
+2025-05-13 11:20:24,339 - asx_trader.prediction - INFO - Analyzing news item 1/10: ASX Market Update: Stocks Down on Economic Data...
+2025-05-13 11:20:28,143 - asx_trader.prediction - INFO - Analyzing news item 2/10: ^AORD Misses Earnings Expectations...
+2025-05-13 11:20:34,132 - asx_trader.prediction - INFO - Analyzing news item 3/10: ASX Market Update: Stocks Down on Economic Data...
+2025-05-13 11:20:41,260 - asx_trader.prediction - INFO - Analyzing news item 4/10: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 11:20:46,475 - asx_trader.prediction - INFO - Analyzing news item 5/10: Analysts Upgrade ^AORD to Buy...
+2025-05-13 11:20:54,274 - asx_trader.prediction - INFO - Analyzing news item 6/10: CEO of ^AORD Steps Down...
+2025-05-13 11:21:01,288 - asx_trader.prediction - INFO - Analyzing news item 7/10: CEO of ^AORD Steps Down...
+2025-05-13 11:21:07,575 - asx_trader.prediction - INFO - Analyzing news item 8/10: ASX Market Update: Stocks Up on Economic Data...
+2025-05-13 11:21:15,761 - asx_trader.prediction - INFO - Analyzing news item 9/10: ^AORD Misses Earnings Expectations...
+2025-05-13 11:21:21,735 - asx_trader.prediction - INFO - Analyzing news item 10/10: Analysts Upgrade ^AORD to Buy...
+2025-05-13 11:21:29,278 - __main__ - INFO - Generated 10 trading signals
+2025-05-13 11:21:29,283 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-13 11:21:44,726 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 11:21:44,726 - __main__ - INFO - Trading cycle completed at 2025-05-13 11:21:44.726902 (duration: 0:01:21.882074)
+2025-05-13 11:21:44,732 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 12:51:44.727068
+2025-05-13 11:21:44,732 - __main__ - INFO - Next run scheduled at 2025-05-13 12:51:44.727068 (waiting 90.0 minutes)
+2025-05-13 11:31:32,123 - __main__ - INFO - Trading system stopped by user
+2025-05-13 11:37:10,413 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-13 11:37:11,401 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-13 11:37:11,401 - asx_trader.database - INFO - Database initialized successfully
+2025-05-13 11:37:11,401 - __main__ - INFO - Starting trading cycle at 2025-05-13 11:37:11.401910
+2025-05-13 11:37:11,402 - __main__ - INFO - Created news collector
+2025-05-13 11:37:11,402 - __main__ - INFO - Created market scanner
+2025-05-13 11:37:11,402 - __main__ - INFO - Created prediction engine
+2025-05-13 11:37:11,402 - __main__ - INFO - Created risk management
+2025-05-13 11:37:11,402 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 11:37:11,402 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 11:37:12,166 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 11:37:12,167 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 11:37:12,955 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 11:37:12,955 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 11:37:12,955 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 11:37:12,955 - asx_trader.news - INFO - Generated 10 mock news items
+2025-05-13 11:37:12,956 - __main__ - INFO - Collected 10 news items
+2025-05-13 11:37:12,956 - asx_trader.prediction - INFO - Analyzing news item 1/10: CEO of ^AORD Steps Down...
+2025-05-13 11:37:17,355 - asx_trader.prediction - INFO - Analyzing news item 2/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 11:37:24,573 - asx_trader.prediction - INFO - Analyzing news item 3/10: ASX Market Update: Stocks Up on Economic Data...
+2025-05-13 11:37:31,555 - asx_trader.prediction - INFO - Analyzing news item 4/10: ^AORD Acquires Competitor to Expand Market Share...
+2025-05-13 11:37:40,347 - asx_trader.prediction - INFO - Analyzing news item 5/10: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 11:37:48,666 - asx_trader.prediction - INFO - Analyzing news item 6/10: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-13 11:37:55,072 - asx_trader.prediction - INFO - Analyzing news item 7/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 11:38:01,495 - asx_trader.prediction - INFO - Analyzing news item 8/10: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-13 11:38:09,442 - asx_trader.prediction - INFO - Analyzing news item 9/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 11:38:16,780 - asx_trader.prediction - INFO - Analyzing news item 10/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 11:38:24,342 - __main__ - INFO - Generated 10 trading signals
+2025-05-13 11:38:24,350 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-13 11:38:34,105 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 11:38:34,105 - __main__ - INFO - Trading cycle completed at 2025-05-13 11:38:34.105217 (duration: 0:01:22.703307)
+2025-05-13 11:38:34,110 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 13:08:34.105332
+2025-05-13 11:38:34,111 - __main__ - INFO - Next run scheduled at 2025-05-13 13:08:34.105332 (waiting 90.0 minutes)
+2025-05-13 13:08:34,105 - __main__ - INFO - Starting trading cycle at 2025-05-13 13:08:34.105547
+2025-05-13 13:08:34,105 - __main__ - INFO - Created news collector
+2025-05-13 13:08:34,105 - __main__ - INFO - Created market scanner
+2025-05-13 13:08:34,105 - __main__ - INFO - Created prediction engine
+2025-05-13 13:08:34,105 - __main__ - INFO - Created risk management
+2025-05-13 13:08:34,105 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-13 13:08:34,106 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-13 13:08:34,989 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-13 13:08:34,989 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-13 13:08:35,672 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-13 13:08:35,672 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-13 13:08:35,672 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-13 13:08:35,672 - asx_trader.news - INFO - Generated 10 mock news items
+2025-05-13 13:08:35,672 - __main__ - INFO - Collected 10 news items
+2025-05-13 13:08:35,672 - asx_trader.prediction - INFO - Analyzing news item 1/10: ^AORD Misses Earnings Expectations...
+2025-05-13 13:08:39,002 - asx_trader.prediction - INFO - Analyzing news item 2/10: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 13:08:46,053 - asx_trader.prediction - INFO - Analyzing news item 3/10: ^AORD Acquires Competitor to Expand Market Share...
+2025-05-13 13:08:52,242 - asx_trader.prediction - INFO - Analyzing news item 4/10: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 13:09:00,149 - asx_trader.prediction - INFO - Analyzing news item 5/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-13 13:09:09,147 - asx_trader.prediction - INFO - Analyzing news item 6/10: ^AORD Reports Strong Quarterly Earnings...
+2025-05-13 13:09:15,005 - asx_trader.prediction - INFO - Analyzing news item 7/10: Analysts Upgrade ^AORD to Buy...
+2025-05-13 13:09:22,846 - asx_trader.prediction - INFO - Analyzing news item 8/10: CEO of ^AORD Steps Down...
+2025-05-13 13:09:28,986 - asx_trader.prediction - INFO - Analyzing news item 9/10: ^AORD Acquires Competitor to Expand Market Share...
+2025-05-13 13:09:36,348 - asx_trader.prediction - INFO - Analyzing news item 10/10: Analysts Upgrade ^AORD to Buy...
+2025-05-13 13:09:42,285 - __main__ - INFO - Generated 10 trading signals
+2025-05-13 13:09:42,293 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-13 13:09:58,559 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-13 13:09:58,560 - __main__ - INFO - Trading cycle completed at 2025-05-13 13:09:58.560054 (duration: 0:01:24.454507)
+2025-05-13 13:09:58,565 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-13 14:39:58.560157
+2025-05-13 13:09:58,565 - __main__ - INFO - Next run scheduled at 2025-05-13 14:39:58.560157 (waiting 90.0 minutes)
+2025-05-15 02:00:45,823 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-15 02:00:47,211 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-15 02:00:47,212 - asx_trader.database - INFO - Database initialized successfully
+2025-05-15 02:00:47,212 - __main__ - INFO - Market is closed. Checking again in 15 minutes.
+2025-05-15 02:02:05,795 - __main__ - INFO - Trading system stopped by user
+2025-05-15 02:10:52,970 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-15 02:10:53,874 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-15 02:10:53,875 - asx_trader.database - INFO - Database initialized successfully
+2025-05-15 02:10:53,875 - __main__ - INFO - Market is closed. Checking again in 15 minutes.
+2025-05-15 02:11:01,414 - __main__ - INFO - Trading system stopped by user
+2025-05-15 04:43:45,417 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-15 04:43:46,612 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-15 04:43:46,613 - asx_trader.database - INFO - Database initialized successfully
+2025-05-15 04:43:46,613 - __main__ - INFO - Market is closed. Checking again in 15 minutes.
+2025-05-15 04:43:55,575 - __main__ - INFO - Trading system stopped by user
+2025-05-15 14:46:13,256 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-15 14:46:13,900 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-15 14:46:13,901 - asx_trader.database - INFO - Database initialized successfully
+2025-05-15 14:46:13,901 - __main__ - INFO - Starting trading cycle at 2025-05-15 14:46:13.901684
+2025-05-15 14:46:13,901 - __main__ - INFO - Created news collector
+2025-05-15 14:46:13,901 - __main__ - INFO - Created market scanner
+2025-05-15 14:46:13,901 - __main__ - INFO - Created prediction engine
+2025-05-15 14:46:13,901 - __main__ - INFO - Created risk management
+2025-05-15 14:46:13,901 - asx_trader.market - INFO - Getting market symbols with scan mode: full
+2025-05-15 14:46:13,901 - asx_trader.market - WARNING - Unknown scan mode 'full', defaulting to trending symbols.
+2025-05-15 14:46:14,811 - __main__ - INFO - Using 1 symbols from market scan
+2025-05-15 14:46:14,811 - asx_trader.market - INFO - Getting market data for 1 symbols
+2025-05-15 14:46:15,471 - asx_trader.market - INFO - Retrieved market data for 1 symbols
+2025-05-15 14:46:15,472 - __main__ - INFO - Collected market data for 1 symbols
+2025-05-15 14:46:15,472 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-15 14:46:15,472 - asx_trader.news - INFO - Generated 10 mock news items
+2025-05-15 14:46:15,472 - __main__ - INFO - Collected 10 news items
+2025-05-15 14:46:15,472 - asx_trader.prediction - INFO - Analyzing news item 1/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-15 14:46:19,999 - asx_trader.prediction - INFO - Analyzing news item 2/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-15 14:46:26,028 - asx_trader.prediction - INFO - Analyzing news item 3/10: Analysts Downgrade ^AORD on Growth Concerns...
+2025-05-15 14:46:34,726 - asx_trader.prediction - INFO - Analyzing news item 4/10: ^AORD Misses Earnings Expectations...
+2025-05-15 14:46:40,975 - asx_trader.prediction - INFO - Analyzing news item 5/10: ^AORD Reports Strong Quarterly Earnings...
+2025-05-15 14:46:47,920 - asx_trader.prediction - INFO - Analyzing news item 6/10: ^AORD Acquires Competitor to Expand Market Share...
+2025-05-15 14:46:58,203 - asx_trader.prediction - INFO - Analyzing news item 7/10: ^AORD Misses Earnings Expectations...
+2025-05-15 14:47:05,974 - asx_trader.prediction - INFO - Analyzing news item 8/10: ^AORD Acquires Competitor to Expand Market Share...
+2025-05-15 14:47:12,238 - asx_trader.prediction - INFO - Analyzing news item 9/10: ASX Market Update: Stocks Mixed on Economic Data...
+2025-05-15 14:47:20,208 - asx_trader.prediction - INFO - Analyzing news item 10/10: Analysts Upgrade ^AORD to Buy...
+2025-05-15 14:47:27,236 - __main__ - INFO - Generated 10 trading signals
+2025-05-15 14:47:27,244 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-15 14:47:44,557 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-15 14:47:44,557 - __main__ - INFO - Trading cycle completed at 2025-05-15 14:47:44.557320 (duration: 0:01:30.655636)
+2025-05-15 14:47:44,563 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-16 10:00:44.557449
+2025-05-15 14:47:44,563 - __main__ - INFO - Next run scheduled at 2025-05-16 10:00:44.557449 (waiting 1153.0 minutes)
+2025-05-15 14:48:09,820 - __main__ - INFO - Trading system stopped by user
+2025-05-18 21:57:00,563 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-18 21:57:01,751 - __main__ - INFO - OpenAI curl client test successful: 
+2025-05-18 21:57:01,754 - asx_trader.database - INFO - Database initialized successfully
+2025-05-18 21:57:01,754 - __main__ - INFO - Starting trading cycle at 2025-05-18 21:57:01.754868
+2025-05-18 21:57:01,755 - __main__ - INFO - Created news collector
+2025-05-18 21:57:01,755 - __main__ - INFO - Created market scanner
+2025-05-18 21:57:01,764 - __main__ - INFO - Created prediction engine
+2025-05-18 21:57:01,764 - __main__ - INFO - Created risk management
+2025-05-18 21:57:01,765 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-18 21:57:02,696 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-18 21:57:02,697 - __main__ - INFO - Using 3 symbols from market scan
+2025-05-18 21:57:02,697 - asx_trader.market - INFO - Getting market data for 3 symbols
+2025-05-18 21:57:03,415 - asx_trader.market - INFO - Retrieved market data for 3 symbols
+2025-05-18 21:57:03,415 - __main__ - INFO - Collected market data for 3 symbols
+2025-05-18 21:57:03,415 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-18 21:57:06,832 - asx_trader.news - INFO - Fetched 5 news items
+2025-05-18 21:57:06,833 - __main__ - INFO - Collected 5 news items
+2025-05-18 21:57:06,833 - asx_trader.prediction - INFO - Analyzing news item 1/5: Barefoot Investor warns against 'stupid' real esta...
+2025-05-18 21:57:17,143 - asx_trader.prediction - INFO - Analyzing news item 2/5: Colder nights behind vibrant colours of autumn lea...
+2025-05-18 21:57:23,300 - asx_trader.prediction - INFO - Analyzing news item 3/5: Autumn leaves shower NSW Southern Highlands street...
+2025-05-18 21:57:28,491 - asx_trader.prediction - INFO - Analyzing news item 4/5: Quality standards and science credited with the co...
+2025-05-18 21:57:34,509 - asx_trader.prediction - INFO - Analyzing news item 5/5: The $23 billion question: Can our banks sustain th...
+2025-05-18 21:57:41,529 - __main__ - INFO - Generated 5 trading signals
+2025-05-18 21:57:41,537 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-18 21:58:01,551 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-18 21:58:01,551 - __main__ - INFO - Trading cycle completed at 2025-05-18 21:58:01.551295 (duration: 0:00:59.796427)
+2025-05-18 21:58:01,567 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 10:00:01 AEST
+2025-05-18 21:58:01,573 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 10:00:01.567038+10:00
+2025-05-18 22:10:40,741 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-18 22:10:44,908 - __main__ - INFO - OpenAI curl client test successful: Hello! How can I assist you today?
+2025-05-18 22:10:44,909 - asx_trader.database - INFO - Database initialized successfully
+2025-05-18 22:10:44,909 - __main__ - INFO - Starting trading cycle at 2025-05-18 22:10:44.909430
+2025-05-18 22:10:44,909 - __main__ - INFO - Created news collector
+2025-05-18 22:10:44,909 - __main__ - INFO - Created market scanner
+2025-05-18 22:10:44,909 - __main__ - INFO - Created prediction engine
+2025-05-18 22:10:44,909 - __main__ - INFO - Created risk management
+2025-05-18 22:10:44,909 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-18 22:10:45,724 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-18 22:10:45,724 - __main__ - INFO - Retrieved 30 ASX symbols
+2025-05-18 22:10:45,724 - __main__ - INFO - Using 3 symbols from market scan
+2025-05-18 22:10:45,724 - asx_trader.market - INFO - Getting market data for 3 symbols
+2025-05-18 22:10:46,437 - asx_trader.market - INFO - Retrieved market data for 3 symbols
+2025-05-18 22:10:46,437 - __main__ - INFO - Collected market data for 3 symbols
+2025-05-18 22:10:46,437 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-18 22:10:50,954 - asx_trader.news - INFO - Fetched 5 news items
+2025-05-18 22:10:50,954 - __main__ - INFO - Collected 5 news items
+2025-05-18 22:10:50,954 - asx_trader.prediction - INFO - Analyzing news item 1/5: Barefoot Investor warns against 'stupid' real esta...
+2025-05-18 22:10:55,046 - asx_trader.prediction - INFO - Analyzing news item 2/5: Colder nights behind vibrant colours of autumn lea...
+2025-05-18 22:11:01,662 - asx_trader.prediction - INFO - Analyzing news item 3/5: Autumn leaves shower NSW Southern Highlands street...
+2025-05-18 22:11:08,316 - asx_trader.prediction - INFO - Analyzing news item 4/5: Quality standards and science credited with the co...
+2025-05-18 22:11:18,483 - asx_trader.prediction - WARNING - Empty response content from API
+2025-05-18 22:11:18,483 - asx_trader.prediction - INFO - Analyzing news item 5/5: The $23 billion question: Can our banks sustain th...
+2025-05-18 22:11:29,637 - __main__ - INFO - Generated 5 trading signals
+2025-05-18 22:11:29,642 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-18 22:11:39,954 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-18 22:11:39,954 - __main__ - INFO - Trading cycle completed at 2025-05-18 22:11:39.954319 (duration: 0:00:55.044889)
+2025-05-18 22:11:39,966 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 10:00:39 AEST
+2025-05-18 22:11:39,971 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 10:00:39.966161+10:00
+2025-05-19 08:44:21,033 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-19 08:44:23,597 - __main__ - INFO - OpenAI curl client test successful: Hello! How can I assist you today?
+2025-05-19 08:44:23,598 - asx_trader.database - INFO - Database initialized successfully
+2025-05-19 08:44:23,610 - asx_trader.utils - INFO - Current Sydney time: 2025-05-19 08:44:23 AEST. Market status: Closed (Outside trading hours)
+2025-05-19 08:44:23,610 - __main__ - INFO - Starting trading cycle at 2025-05-19 08:44:23.610129
+2025-05-19 08:44:23,610 - __main__ - INFO - Created news collector
+2025-05-19 08:44:23,610 - __main__ - INFO - Created market scanner
+2025-05-19 08:44:23,610 - __main__ - INFO - Created prediction engine
+2025-05-19 08:44:23,610 - __main__ - INFO - Created risk management
+2025-05-19 08:44:23,610 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-19 08:44:24,532 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:44:24,533 - __main__ - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:44:24,533 - __main__ - INFO - Using 5 symbols from market scan
+2025-05-19 08:44:24,533 - asx_trader.market - INFO - Getting market data for 5 symbols
+2025-05-19 08:44:25,308 - asx_trader.market - INFO - Retrieved market data for 5 symbols
+2025-05-19 08:44:25,308 - __main__ - INFO - Collected market data for 5 symbols
+2025-05-19 08:44:25,309 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-19 08:44:30,299 - asx_trader.news - INFO - Fetched 10 news items
+2025-05-19 08:44:30,299 - __main__ - INFO - Collected 10 news items
+2025-05-19 08:44:30,299 - asx_trader.prediction - INFO - Analyzing news item 1/10: Dream wedding plans crumble in Adelaide couple’s t...
+2025-05-19 08:44:36,866 - asx_trader.prediction - INFO - Analyzing news item 2/10: Is this Adelaide’s most haunted retail hotspot? - ...
+2025-05-19 08:44:46,581 - asx_trader.prediction - INFO - Analyzing news item 3/10: If You Hold $1,000 in Shiba Inu, Can SHIB Make You...
+2025-05-19 08:44:54,100 - asx_trader.prediction - INFO - Analyzing news item 4/10: Fortescue plans major Pilbara wind farm build as ‘...
+2025-05-19 08:44:59,436 - asx_trader.prediction - INFO - Analyzing news item 5/10: Stagwell (STGW) Appoints Connie Chan as Chief Grow...
+2025-05-19 08:45:08,851 - asx_trader.prediction - INFO - Analyzing news item 6/10: Hunter women chart their careers in the maritime i...
+2025-05-19 08:45:20,507 - asx_trader.prediction - INFO - Analyzing news item 7/10: West Coast Eagles honour premiership player Adam S...
+2025-05-19 08:45:30,422 - asx_trader.prediction - INFO - Analyzing news item 8/10: Fashion power couple add to huge property empire w...
+2025-05-19 08:45:36,650 - asx_trader.prediction - INFO - Analyzing news item 9/10: A grand mansion is for sale for $200m plus – and t...
+2025-05-19 08:45:45,022 - asx_trader.prediction - INFO - Analyzing news item 10/10: China announces anti-dumping duties on plastics fr...
+2025-05-19 08:45:52,109 - __main__ - INFO - Generated 10 trading signals
+2025-05-19 08:45:52,118 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-19 08:46:11,497 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-19 08:46:11,497 - __main__ - INFO - Trading cycle completed at 2025-05-19 08:46:11.497454 (duration: 0:01:47.887325)
+2025-05-19 08:46:11,497 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 10:16:11 AEST
+2025-05-19 08:46:11,503 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 10:16:11.497568+10:00
+2025-05-19 08:46:11,503 - __main__ - ERROR - Unexpected error in main loop: can't subtract offset-naive and offset-aware datetimes
+2025-05-19 08:52:28,756 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-19 08:52:30,488 - __main__ - INFO - OpenAI curl client test successful: Hello!
+2025-05-19 08:52:30,488 - asx_trader.database - INFO - Database initialized successfully
+2025-05-19 08:52:30,501 - asx_trader.utils - INFO - Current Sydney time: 2025-05-19 08:52:30 AEST. Market status: Closed (Outside trading hours)
+2025-05-19 08:52:30,501 - __main__ - INFO - Starting trading cycle at 2025-05-19 08:52:30.501420
+2025-05-19 08:52:30,501 - __main__ - INFO - Created news collector
+2025-05-19 08:52:30,501 - __main__ - INFO - Created market scanner
+2025-05-19 08:52:30,501 - __main__ - INFO - Created prediction engine
+2025-05-19 08:52:30,501 - __main__ - INFO - Created risk management
+2025-05-19 08:52:30,501 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-19 08:52:31,154 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:52:31,154 - __main__ - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:52:31,154 - __main__ - INFO - Using 5 symbols from market scan
+2025-05-19 08:52:31,154 - asx_trader.market - INFO - Getting market data for 5 symbols
+2025-05-19 08:52:31,994 - asx_trader.market - INFO - Retrieved market data for 5 symbols
+2025-05-19 08:52:31,994 - __main__ - INFO - Collected market data for 5 symbols
+2025-05-19 08:52:31,994 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-19 08:52:37,115 - asx_trader.news - INFO - Fetched 10 news items
+2025-05-19 08:52:37,116 - __main__ - INFO - Collected 10 news items
+2025-05-19 08:52:37,116 - asx_trader.prediction - INFO - Analyzing news item 1/10: Hamish’s itchy feet at ABC, while De Ceglie mauled...
+2025-05-19 08:52:43,459 - asx_trader.prediction - INFO - Analyzing news item 2/10: Dream wedding plans crumble in Adelaide couple’s t...
+2025-05-19 08:52:51,097 - asx_trader.prediction - INFO - Analyzing news item 3/10: Is this Adelaide’s most haunted retail hotspot? - ...
+2025-05-19 08:52:59,153 - asx_trader.prediction - INFO - Analyzing news item 4/10: If You Hold $1,000 in Shiba Inu, Can SHIB Make You...
+2025-05-19 08:53:06,129 - asx_trader.prediction - INFO - Analyzing news item 5/10: Fortescue plans major Pilbara wind farm build as ‘...
+2025-05-19 08:53:12,528 - asx_trader.prediction - INFO - Analyzing news item 6/10: Stagwell (STGW) Appoints Connie Chan as Chief Grow...
+2025-05-19 08:53:18,682 - asx_trader.prediction - INFO - Analyzing news item 7/10: Hunter women chart their careers in the maritime i...
+2025-05-19 08:53:26,873 - asx_trader.prediction - INFO - Analyzing news item 8/10: West Coast Eagles honour premiership player Adam S...
+2025-05-19 08:53:33,780 - asx_trader.prediction - INFO - Analyzing news item 9/10: Fashion power couple add to huge property empire w...
+2025-05-19 08:53:41,196 - asx_trader.prediction - INFO - Analyzing news item 10/10: A grand mansion is for sale for $200m plus – and t...
+2025-05-19 08:53:46,777 - __main__ - INFO - Generated 10 trading signals
+2025-05-19 08:53:46,783 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-19 08:53:57,926 - __main__ - INFO - Completed risk assessment: Medium risk
+2025-05-19 08:53:57,926 - __main__ - INFO - Trading cycle completed at 2025-05-19 08:53:57.926249 (duration: 0:01:27.424829)
+2025-05-19 08:53:57,926 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 10:23:57 AEST
+2025-05-19 08:53:57,932 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 10:23:57.926414+10:00
+2025-05-19 08:53:57,932 - __main__ - ERROR - Unexpected error in main loop: can't subtract offset-naive and offset-aware datetimes
+2025-05-19 08:57:17,863 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-19 08:57:19,469 - __main__ - INFO - OpenAI curl client test successful: Hello! How can I assist you today?
+2025-05-19 08:57:19,470 - asx_trader.database - INFO - Database initialized successfully
+2025-05-19 08:57:19,481 - asx_trader.utils - INFO - Current Sydney time: 2025-05-19 08:57:19 AEST. Market status: Closed (Outside trading hours)
+2025-05-19 08:57:19,481 - __main__ - INFO - Starting trading cycle at 2025-05-19 08:57:19.481975
+2025-05-19 08:57:19,482 - __main__ - INFO - Created news collector
+2025-05-19 08:57:19,482 - __main__ - INFO - Created market scanner
+2025-05-19 08:57:19,482 - __main__ - INFO - Created prediction engine
+2025-05-19 08:57:19,482 - __main__ - INFO - Created risk management
+2025-05-19 08:57:19,482 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-19 08:57:20,199 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:57:20,199 - __main__ - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:57:20,199 - __main__ - INFO - Using 5 symbols from market scan
+2025-05-19 08:57:20,199 - asx_trader.market - INFO - Getting market data for 5 symbols
+2025-05-19 08:57:21,012 - asx_trader.market - INFO - Retrieved market data for 5 symbols
+2025-05-19 08:57:21,012 - __main__ - INFO - Collected market data for 5 symbols
+2025-05-19 08:57:21,012 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-19 08:57:25,689 - asx_trader.news - INFO - Fetched 10 news items
+2025-05-19 08:57:25,690 - __main__ - INFO - Collected 10 news items
+2025-05-19 08:57:25,690 - asx_trader.prediction - INFO - Analyzing news item 1/10: Hamish’s itchy feet at ABC, while De Ceglie mauled...
+2025-05-19 08:57:31,916 - asx_trader.prediction - INFO - Analyzing news item 2/10: Dream wedding plans crumble in Adelaide couple’s t...
+2025-05-19 08:57:43,423 - asx_trader.prediction - INFO - Analyzing news item 3/10: Is this Adelaide’s most haunted retail hotspot? - ...
+2025-05-19 08:57:56,262 - asx_trader.prediction - INFO - Analyzing news item 4/10: If You Hold $1,000 in Shiba Inu, Can SHIB Make You...
+2025-05-19 08:58:09,447 - asx_trader.prediction - INFO - Analyzing news item 5/10: Fortescue plans major Pilbara wind farm build as ‘...
+2025-05-19 08:58:19,288 - asx_trader.prediction - INFO - Analyzing news item 6/10: Stagwell (STGW) Appoints Connie Chan as Chief Grow...
+2025-05-19 08:58:25,678 - asx_trader.prediction - INFO - Analyzing news item 7/10: Hunter women chart their careers in the maritime i...
+2025-05-19 08:58:31,550 - asx_trader.prediction - INFO - Analyzing news item 8/10: West Coast Eagles honour premiership player Adam S...
+2025-05-19 08:58:39,984 - asx_trader.prediction - INFO - Analyzing news item 9/10: Fashion power couple add to huge property empire w...
+2025-05-19 08:58:47,919 - asx_trader.prediction - INFO - Analyzing news item 10/10: A grand mansion is for sale for $200m plus – and t...
+2025-05-19 08:58:55,481 - __main__ - INFO - Generated 10 trading signals
+2025-05-19 08:58:55,488 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-19 08:59:09,917 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-19 08:59:09,917 - __main__ - INFO - Trading cycle completed at 2025-05-19 08:59:09.917913 (duration: 0:01:50.435938)
+2025-05-19 08:59:09,918 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 10:29:09 AEST
+2025-05-19 08:59:09,923 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 10:29:09.918057+10:00
+2025-05-19 08:59:09,924 - __main__ - ERROR - Unexpected error in main loop: module 'datetime' has no attribute 'now'
+2025-05-19 08:59:49,777 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-19 08:59:51,695 - __main__ - INFO - OpenAI curl client test successful: Hello!
+2025-05-19 08:59:51,696 - asx_trader.database - INFO - Database initialized successfully
+2025-05-19 08:59:51,708 - asx_trader.utils - INFO - Current Sydney time: 2025-05-19 08:59:51 AEST. Market status: Closed (Outside trading hours)
+2025-05-19 08:59:51,708 - __main__ - INFO - Starting trading cycle at 2025-05-19 08:59:51.708328
+2025-05-19 08:59:51,708 - __main__ - INFO - Created news collector
+2025-05-19 08:59:51,708 - __main__ - INFO - Created market scanner
+2025-05-19 08:59:51,708 - __main__ - INFO - Created prediction engine
+2025-05-19 08:59:51,708 - __main__ - INFO - Created risk management
+2025-05-19 08:59:51,708 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-19 08:59:52,505 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:59:52,506 - __main__ - INFO - Retrieved 30 ASX symbols
+2025-05-19 08:59:52,506 - __main__ - INFO - Using 5 symbols from market scan
+2025-05-19 08:59:52,506 - asx_trader.market - INFO - Getting market data for 5 symbols
+2025-05-19 08:59:53,226 - asx_trader.market - INFO - Retrieved market data for 5 symbols
+2025-05-19 08:59:53,226 - __main__ - INFO - Collected market data for 5 symbols
+2025-05-19 08:59:53,226 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-19 08:59:58,653 - asx_trader.news - INFO - Fetched 10 news items
+2025-05-19 08:59:58,653 - __main__ - INFO - Collected 10 news items
+2025-05-19 08:59:58,653 - asx_trader.prediction - INFO - Analyzing news item 1/10: Hamish’s itchy feet at ABC, while De Ceglie mauled...
+2025-05-19 09:00:08,327 - asx_trader.prediction - INFO - Analyzing news item 2/10: Dream wedding plans crumble in Adelaide couple’s t...
+2025-05-19 09:00:16,646 - asx_trader.prediction - INFO - Analyzing news item 3/10: Is this Adelaide’s most haunted retail hotspot? - ...
+2025-05-19 09:00:24,666 - asx_trader.prediction - INFO - Analyzing news item 4/10: If You Hold $1,000 in Shiba Inu, Can SHIB Make You...
+2025-05-19 09:00:32,487 - asx_trader.prediction - INFO - Analyzing news item 5/10: Fortescue plans major Pilbara wind farm build as ‘...
+2025-05-19 09:00:41,116 - asx_trader.prediction - INFO - Analyzing news item 6/10: Stagwell (STGW) Appoints Connie Chan as Chief Grow...
+2025-05-19 09:00:48,035 - asx_trader.prediction - INFO - Analyzing news item 7/10: Hunter women chart their careers in the maritime i...
+2025-05-19 09:00:58,838 - asx_trader.prediction - INFO - Analyzing news item 8/10: West Coast Eagles honour premiership player Adam S...
+2025-05-19 09:01:04,730 - asx_trader.prediction - INFO - Analyzing news item 9/10: Fashion power couple add to huge property empire w...
+2025-05-19 09:01:10,644 - asx_trader.prediction - INFO - Analyzing news item 10/10: A grand mansion is for sale for $200m plus – and t...
+2025-05-19 09:01:18,388 - __main__ - INFO - Generated 10 trading signals
+2025-05-19 09:01:18,394 - asx_trader.database - INFO - Saved 10 trading signals to database
+2025-05-19 09:01:31,018 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-19 09:01:31,019 - __main__ - INFO - Trading cycle completed at 2025-05-19 09:01:31.019141 (duration: 0:01:39.310813)
+2025-05-19 09:01:31,019 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 10:31:31 AEST
+2025-05-19 09:01:31,024 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 10:31:31.019277+10:00
+2025-05-19 09:01:31,025 - __main__ - INFO - Next run scheduled at 2025-05-19 10:31:31.019277+10:00 (waiting 90.0 minutes)
+2025-05-19 09:40:47,798 - __main__ - INFO - Trading system stopped by user
+2025-05-19 09:45:02,427 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-19 09:45:04,375 - __main__ - INFO - OpenAI curl client test successful: Hello!
+2025-05-19 09:45:04,375 - asx_trader.database - INFO - Database initialized successfully
+2025-05-19 09:45:04,386 - asx_trader.utils - INFO - Current Sydney time: 2025-05-19 09:45:04 AEST. Market status: Closed (Outside trading hours)
+2025-05-19 09:45:04,386 - __main__ - INFO - Starting trading cycle at 2025-05-19 09:45:04.386967
+2025-05-19 09:45:04,387 - __main__ - INFO - Created news collector
+2025-05-19 09:45:04,387 - __main__ - INFO - Created market scanner
+2025-05-19 09:45:04,387 - __main__ - INFO - Created prediction engine
+2025-05-19 09:45:04,387 - __main__ - INFO - Created risk management
+2025-05-19 09:45:04,387 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-19 09:45:05,038 - asx_trader.market - INFO - Retrieved 30 ASX symbols
+2025-05-19 09:45:05,038 - __main__ - INFO - Retrieved 30 ASX symbols
+2025-05-19 09:45:05,038 - __main__ - INFO - Using 10 symbols from market scan
+2025-05-19 09:45:05,039 - asx_trader.market - INFO - Getting market data for 10 symbols
+2025-05-19 09:45:05,849 - asx_trader.market - INFO - Retrieved market data for 10 symbols
+2025-05-19 09:45:05,849 - __main__ - INFO - Collected market data for 10 symbols
+2025-05-19 09:45:05,849 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-19 09:45:06,788 - asx_trader.news - ERROR - Error fetching market news from NewsData.io: 422 Client Error: UNPROCESSABLE ENTITY for url: https://newsdata.io/api/1/news?apikey=pub_87790283385cc322ada629217c5e0df69f475&country=au&category=business&language=en&size=20
+2025-05-19 09:45:12,076 - asx_trader.news - INFO - Fetched 4 news items
+2025-05-19 09:45:12,076 - __main__ - INFO - Collected 4 news items
+2025-05-19 09:45:12,076 - asx_trader.prediction - INFO - Analyzing news item 1/4: The $23 billion question: Can our banks sustain th...
+2025-05-19 09:45:20,006 - asx_trader.prediction - INFO - Analyzing news item 2/4: The $23 billion question: Can our banks sustain th...
+2025-05-19 09:45:31,754 - asx_trader.prediction - INFO - Analyzing news item 3/4: The $23 billion question: Can our banks sustain th...
+2025-05-19 09:45:46,548 - asx_trader.prediction - INFO - Analyzing news item 4/4: The $23 billion question: Can our banks sustain th...
+2025-05-19 09:45:51,896 - __main__ - INFO - Generated 4 trading signals
+2025-05-19 09:45:51,902 - asx_trader.database - INFO - Saved 4 trading signals to database
+2025-05-19 09:46:04,376 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-19 09:46:04,377 - __main__ - INFO - Trading cycle completed at 2025-05-19 09:46:04.377088 (duration: 0:00:59.990121)
+2025-05-19 09:46:04,377 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-19 11:16:04 AEST
+2025-05-19 09:46:04,383 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-19 11:16:04.377228+10:00
+2025-05-19 09:46:04,383 - __main__ - INFO - Next run scheduled at 2025-05-19 11:16:04.377228+10:00 (waiting 90.0 minutes)
