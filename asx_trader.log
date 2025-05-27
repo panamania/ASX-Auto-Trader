@@ -1,0 +1,46 @@
+2025-05-27 20:58:31,902 - asx_trader.broker - INFO - Successfully logged in to IG API
+2025-05-27 20:58:32,322 - asx_trader.broker - INFO - Retrieved account balance from IG API: $0.00
+2025-05-27 20:58:32,323 - asx_trader.broker - INFO - Account ID: PU7RJ
+2025-05-27 20:58:32,323 - asx_trader.broker - INFO - Account Type: CFD
+2025-05-27 20:58:32,323 - asx_trader.broker - INFO - Account Status: SUSPENDED_FROM_DEALING
+2025-05-27 20:58:32,326 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-27 20:58:34,843 - __main__ - INFO - OpenAI curl client test successful: Hello there! How can I help you today?
+2025-05-27 20:58:34,844 - asx_trader.database - INFO - Database initialized successfully
+2025-05-27 20:58:34,844 - __main__ - WARNING - ⚠️ TRADING IS ENABLED WITH A LIVE ACCOUNT - REAL MONEY WILL BE USED ⚠️
+2025-05-27 20:58:34,844 - __main__ - INFO - Starting trading cycle at 2025-05-27 20:58:34.844365
+2025-05-27 20:58:34,844 - __main__ - INFO - Created news collector
+2025-05-27 20:58:34,844 - __main__ - INFO - Created market scanner
+2025-05-27 20:58:34,844 - __main__ - INFO - Created prediction engine
+2025-05-27 20:58:34,844 - __main__ - INFO - Created risk management
+2025-05-27 20:58:34,844 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-27 20:58:34,844 - asx_trader.market - INFO - Retrieved 100 ASX symbols
+2025-05-27 20:58:34,844 - __main__ - INFO - Retrieved 20 ASX symbols
+2025-05-27 20:58:34,844 - __main__ - INFO - Using 3 symbols from market scan
+2025-05-27 20:58:34,844 - asx_trader.market - INFO - Getting market data for 3 symbols
+2025-05-27 20:58:35,442 - asx_trader.market - ERROR - Error fetching Yahoo Finance data for CSL: 401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v7/finance/quote?symbols=CSL.AX
+2025-05-27 20:58:35,479 - asx_trader.market - ERROR - Error fetching Yahoo Finance data for BHP: 401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v7/finance/quote?symbols=BHP.AX
+2025-05-27 20:58:35,487 - asx_trader.market - ERROR - Error fetching Yahoo Finance data for CBA: 401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v7/finance/quote?symbols=CBA.AX
+2025-05-27 20:58:35,489 - asx_trader.market - INFO - Retrieved market data for 3 symbols
+2025-05-27 20:58:35,489 - __main__ - INFO - Collected market data for 3 symbols
+2025-05-27 20:58:35,489 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-27 20:58:38,137 - asx_trader.news - INFO - Retrieved 15 news items from Google News RSS
+2025-05-27 20:58:38,974 - asx_trader.news - INFO - Added 5 market-wide news items from Google News RSS
+2025-05-27 20:58:38,974 - asx_trader.news - INFO - Fetched 5 news items
+2025-05-27 20:58:38,974 - __main__ - INFO - Collected 5 news items
+2025-05-27 20:58:38,974 - asx_trader.prediction - INFO - Analyzing news item 1/5: BHP refocuses on Finnmark Alliance with Kingsrose ...
+2025-05-27 20:58:46,319 - asx_trader.prediction - INFO - Analyzing news item 2/5: What does Macquarie think BHP shares are worth? - ...
+2025-05-27 20:58:54,236 - asx_trader.prediction - INFO - Analyzing news item 3/5: BHP and QBE Insurance Group Ltd: 2 ASX shares to d...
+2025-05-27 20:59:01,045 - asx_trader.prediction - INFO - Analyzing news item 4/5: Those who invested in BHP Group (ASX:BHP) three ye...
+2025-05-27 20:59:10,385 - asx_trader.prediction - INFO - Analyzing news item 5/5: Are BHP shares cheap after recent fall? - Mornings...
+2025-05-27 20:59:17,093 - __main__ - INFO - Generated 5 trading signals
+2025-05-27 20:59:17,099 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-27 20:59:27,734 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-27 20:59:27,735 - __main__ - INFO - Order simulated: BUY 3 BHP
+2025-05-27 20:59:27,735 - __main__ - INFO - Order simulated: BUY 3 BHP
+2025-05-27 20:59:27,735 - __main__ - INFO - Order simulated: BUY 3 BHP
+2025-05-27 20:59:27,735 - __main__ - INFO - Order simulated: BUY 3 BHP
+2025-05-27 20:59:27,735 - __main__ - INFO - Generated 4 trading orders
+2025-05-27 20:59:27,741 - asx_trader.database - INFO - Saved 4 trading orders to database
+2025-05-27 20:59:27,742 - __main__ - INFO - Trading cycle completed at 2025-05-27 20:59:27.741996 (duration: 0:00:52.897631)
+2025-05-27 20:59:27,763 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-28 10:00:27 AEST
+2025-05-27 20:59:27,768 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-28 10:00:27.763020+10:00
