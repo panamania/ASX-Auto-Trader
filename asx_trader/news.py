@@ -6,6 +6,7 @@ import logging
 import requests
 import json
 import random
+
 import html
 import re
 import xml.etree.ElementTree as ET
@@ -34,10 +35,14 @@ class ASXNewsCollector:
         logger.info(f"Fetching news for {'market-wide' if market_wide else symbols}")
         
         try:
+            # For POC/testing: Generate mock news data if API not available
+            # In production, replace this with actual API call
+            
             # Set default limit based on whether we're doing market-wide or specific symbols
             if limit is None:
                 limit = 20 if market_wide else 10
             
+
             # Try to get real news first
             news_items = []
             
@@ -197,6 +202,16 @@ class ASXNewsCollector:
                 "language": "en",   # English
                 "size": min(limit, 20)  # Maximum allowed is 20 for free tier
             }
+
+            # Generate mock news data
+            news_items = self._generate_mock_news(symbols, limit, market_wide)
+            logger.info(f"Generated {len(news_items)} mock news items")
+            return news_items
+            
+            # Uncomment below for real API integration
+            """
+            params = {"limit": limit}
+
             
             response = requests.get(url, params=params)
             
@@ -300,6 +315,7 @@ class ASXNewsCollector:
                 })
                 
             return news_items
+
                 
         except Exception as e:
             logger.error(f"Error fetching NewsData.io company news: {e}")
@@ -343,6 +359,8 @@ class ASXNewsCollector:
             if response.status_code != 200:
                 logger.warning(f"Failed to fetch ASX announcements, status code: {response.status_code}")
                 return []
+
+            """
             
             try:
                 data = response.json()
@@ -498,6 +516,7 @@ class ASXNewsCollector:
                     "type": template["type"],
                     "category": template["type"],
                     "generated": True
+                    "type": template["type"]
                 }
                 
                 news_items.append(news_item)
@@ -547,6 +566,8 @@ class ASXNewsCollector:
         
         # Fall back to generated news
         return self._generate_mock_news(symbols=[symbol], limit=limit, market_wide=False)
+        # For POC, reuse the fetch_latest_news method with specific symbol
+        return self.fetch_latest_news(symbols=[symbol], limit=limit, market_wide=False)
             
     def fetch_market_summaries(self):
         """
@@ -577,3 +598,5 @@ class ASXNewsCollector:
         # Fall back to generated news
         return self._generate_mock_news(limit=5, market_wide=True)
 
+        # For POC, generate market-specific news
+        return self.fetch_latest_news(limit=5, market_wide=True)

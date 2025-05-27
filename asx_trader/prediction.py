@@ -14,6 +14,7 @@ class GPTEnhancedPredictionEngine:
     """Analyzes news and generates trading signals using GPT"""
     def __init__(self):
         self.client = openai_client
+
         self.asx_symbols = self._load_top_asx_symbols()
         
     def _load_top_asx_symbols(self):
@@ -138,6 +139,10 @@ class GPTEnhancedPredictionEngine:
                 model="o4-mini",
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
+                model="o4-mini",  # Using o4-mini as specified
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
+                # Note: removing temperature parameter to use default (1)
             )
             
             # Get the content
@@ -156,6 +161,7 @@ class GPTEnhancedPredictionEngine:
                         "confidence": "low", 
                         "reasoning": "No analysis available due to empty API response"
                     }
+                    analysis = {"signal": "HOLD", "confidence": "low", "reasoning": "No analysis available due to empty API response"}
             except json.JSONDecodeError as e:
                 logger.error(f"Failed to parse JSON response: {e}")
                 logger.error(f"Raw content: {content}")
@@ -187,9 +193,9 @@ class GPTEnhancedPredictionEngine:
                 "news_id": news.get("id", "unknown"),
                 "headline": news.get("headline", "unknown"),
                 "symbols": news.get("symbols", [])[:1] if news.get("symbols") else [],
+                "symbols": news.get("symbols", []),
                 "signal": "ERROR",
                 "confidence": "none",
                 "reasoning": f"API error: {str(e)}",
                 "analysis_time": datetime.now().isoformat()
             }
-

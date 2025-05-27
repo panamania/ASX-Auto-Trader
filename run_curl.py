@@ -34,6 +34,7 @@ try:
     from asx_trader.utils import is_market_open, get_next_run_time
     from asx_trader.curl_openai import openai_client
     from asx_trader.broker import broker
+    from asx_trader.curl_openai import openai_client  # Test the client early
 except Exception as e:
     logger.error(f"Error importing modules: {e}")
     traceback.print_exc()
@@ -114,6 +115,8 @@ def run_trading_cycle(args, db):
             # Get symbols from the market scanner
             all_symbols = market_scanner.get_market_symbols()
             logger.info(f"Retrieved {len(all_symbols)} ASX symbols")
+            # Limit number of symbols for POC
+            all_symbols = market_scanner.get_market_symbols()
             symbols = all_symbols[:args.max_symbols]
             logger.info(f"Using {len(symbols)} symbols from market scan")
         
@@ -234,6 +237,10 @@ def run_trading_cycle(args, db):
         print(f"Analyzed {len(news_items)} news items for {len(symbols)} symbols")
         print(f"Generated {len(signals)} trading signals")
         print(f"Created {len(orders)} trading orders")
+        # 6. Print summary of results
+        print("\n===== ASX Trader Results (Curl Version) =====")
+        print(f"Analyzed {len(news_items)} news items for {len(symbols)} symbols")
+        print(f"Generated {len(signals)} trading signals")
         print(f"Overall market risk: {risk_assessment.get('overall_risk_level', 'unknown')}")
         
         print("\nTop Trading Signals:")
@@ -260,6 +267,18 @@ def run_trading_cycle(args, db):
                 if "dealReference" in order["execution_result"]:
                     print(f"   Reference: {order['execution_result']['dealReference']}")
                 print()
+            # Safely get values with defaults for None
+            symbol_list = signal.get("symbols", [])
+            symbol_str = ", ".join(symbol_list) if symbol_list else "Unknown"
+            signal_type = signal.get("signal") or "Unknown"
+            confidence = signal.get("confidence") or "Unknown"
+            reasoning = signal.get("reasoning") or "No reasoning provided"
+            
+            # Safely get substring
+            reasoning_summary = reasoning[:100] + "..." if len(reasoning) > 100 else reasoning
+            
+            print(f"{i}. {symbol_str} - {signal_type} ({confidence})")
+            print(f"   Reason: {reasoning_summary}")
         
     except Exception as e:
         logger.error(f"Error in trading cycle: {e}")
@@ -293,6 +312,8 @@ def main():
         test_response = openai_client.chat_completion(
             model="o4-mini",
             messages=[{"role": "user", "content": "Say hello"}]
+            messages=[{"role": "user", "content": "Say hello"}],
+            max_tokens=10
         )
         logger.info(f"OpenAI curl client test successful: {test_response.get('content', '')}")
     except Exception as e:
@@ -312,7 +333,7 @@ def main():
                 logger.info("Trading is enabled with a DEMO account")
         else:
             logger.info("Trading is disabled, orders will be simulated")
-        
+
         # Run once if specified
         if args.run_once:
             status, symbols_analyzed, signals_generated, orders_created = run_trading_cycle(args, db)

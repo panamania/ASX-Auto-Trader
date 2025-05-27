@@ -74,12 +74,20 @@ class Config:
         
         # Add trading-specific critical settings if trading is enabled
         if cls.TRADING_ENABLED:
+
             if cls.BROKER_TYPE.upper() == "IG":
                 critical.extend([
                     "BROKER_API_KEY",
                     "BROKER_USERNAME", 
                     "BROKER_PASSWORD"
                 ])
+
+            critical.extend([
+                "BROKER_API_KEY",
+                "ASX_API_KEY",
+                "SNS_TOPIC_ARN"
+            ])
+
         
         # Check for missing critical settings
         for setting in critical:
@@ -103,4 +111,3 @@ class Config:
             logger.warning("⚠️ TRADING IS ENABLED WITH A LIVE ACCOUNT - REAL MONEY WILL BE USED ⚠️")
         
         return True
-
