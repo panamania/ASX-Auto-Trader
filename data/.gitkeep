@@ -1,0 +1,19 @@
+# Create data directory if it doesn't exist
+mkdir -p data
+
+# Create .gitkeep file
+touch data/.gitkeep
+
+# Create or update .gitignore to ignore database files
+cat >> .gitignore << 'EOF'
+
+# Database files
+data/*.db
+data/*.db-*
+data/*.sqlite3
+data/backups/
+
+# Logs
+*.log
+*.log.*
+*.gz

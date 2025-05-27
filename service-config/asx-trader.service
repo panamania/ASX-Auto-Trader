@@ -1,0 +1,25 @@
+[Unit]
+Description=ASX Trader Service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/apps/ASX-Auto-Trader
+ExecStart=/home/ubuntu/apps/ASX-Auto-Trader/venv/bin/python /home/ubuntu/apps/ASX-Auto-Trader/run_curl.py --max-symbols 10 --news-limit 20
+Restart=on-failure
+RestartSec=60
+Environment=PYTHONUNBUFFERED=1
+
+# Optional resource limits
+# LimitNOFILE=65536
+# MemoryLimit=2G
+# CPUQuota=80%
+
+# Security options
+# PrivateTmp=true
+# ProtectHome=read-only
+# ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

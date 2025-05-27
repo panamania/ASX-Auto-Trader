@@ -1,0 +1,12 @@
+/home/ubuntu/apps/ASX-Auto-Trader/asx_trader.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 ubuntu ubuntu
+    postrotate
+        systemctl is-active --quiet asx-trader && systemctl reload-or-restart asx-trader
+    endscript
+}

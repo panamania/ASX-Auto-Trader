@@ -1,0 +1,48 @@
+2025-05-22 18:29:22,709 - asx_trader.broker - INFO - Successfully logged in to IG API
+2025-05-22 18:29:23,090 - asx_trader.broker - INFO - Retrieved account balance from IG API: $0.00
+2025-05-22 18:29:23,090 - asx_trader.broker - INFO - Account ID: PU7RJ
+2025-05-22 18:29:23,091 - asx_trader.broker - INFO - Account Type: CFD
+2025-05-22 18:29:23,091 - asx_trader.broker - INFO - Account Status: SUSPENDED_FROM_DEALING
+2025-05-22 18:29:23,094 - __main__ - INFO - Starting ASX Trader System (Curl Version)
+2025-05-22 18:29:24,992 - __main__ - INFO - OpenAI curl client test successful: Hello! How can I assist you today?
+2025-05-22 18:29:24,993 - asx_trader.database - INFO - Database initialized successfully
+2025-05-22 18:29:24,993 - __main__ - WARNING - ⚠️ TRADING IS ENABLED WITH A LIVE ACCOUNT - REAL MONEY WILL BE USED ⚠️
+2025-05-22 18:29:24,993 - __main__ - INFO - Starting trading cycle at 2025-05-22 18:29:24.993506
+2025-05-22 18:29:24,993 - __main__ - INFO - Created news collector
+2025-05-22 18:29:24,993 - __main__ - INFO - Created market scanner
+2025-05-22 18:29:24,993 - __main__ - INFO - Created prediction engine
+2025-05-22 18:29:24,993 - __main__ - INFO - Created risk management
+2025-05-22 18:29:24,993 - asx_trader.market - INFO - Getting ASX market symbols with scan mode: full
+2025-05-22 18:29:24,993 - asx_trader.market - INFO - Retrieved 100 ASX symbols
+2025-05-22 18:29:24,993 - __main__ - INFO - Retrieved 20 ASX symbols
+2025-05-22 18:29:24,994 - __main__ - INFO - Using 3 symbols from market scan
+2025-05-22 18:29:24,994 - asx_trader.market - INFO - Getting market data for 3 symbols
+2025-05-22 18:29:25,611 - asx_trader.market - ERROR - Error fetching Yahoo Finance data for CBA: 401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v7/finance/quote?symbols=CBA.AX
+2025-05-22 18:29:25,619 - asx_trader.market - ERROR - Error fetching Yahoo Finance data for BHP: 401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v7/finance/quote?symbols=BHP.AX
+2025-05-22 18:29:25,651 - asx_trader.market - ERROR - Error fetching Yahoo Finance data for CSL: 401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v7/finance/quote?symbols=CSL.AX
+2025-05-22 18:29:25,652 - asx_trader.market - INFO - Retrieved market data for 3 symbols
+2025-05-22 18:29:25,653 - __main__ - INFO - Collected market data for 3 symbols
+2025-05-22 18:29:25,653 - asx_trader.news - INFO - Fetching news for market-wide
+2025-05-22 18:29:28,721 - asx_trader.news - INFO - Retrieved 15 news items from Google News RSS
+2025-05-22 18:29:29,529 - asx_trader.news - INFO - Added 5 market-wide news items from Google News RSS
+2025-05-22 18:29:29,529 - asx_trader.news - INFO - Fetched 5 news items
+2025-05-22 18:29:29,529 - __main__ - INFO - Collected 5 news items
+2025-05-22 18:29:29,529 - asx_trader.prediction - INFO - Analyzing news item 1/5: Overinvested in BHP shares? Here are two alternati...
+2025-05-22 18:29:32,461 - asx_trader.prediction - INFO - Analyzing news item 2/5: Visionflex to provide telehealth services for BHP ...
+2025-05-22 18:29:44,790 - asx_trader.prediction - INFO - Analyzing news item 3/5: Those who invested in BHP Group (ASX:BHP) three ye...
+2025-05-22 18:29:53,501 - asx_trader.prediction - INFO - Analyzing news item 4/5: Positive week for BHP Group Limited (ASX:BHP) inst...
+2025-05-22 18:30:01,674 - asx_trader.prediction - INFO - Analyzing news item 5/5: A deep dive into BHP shares - Rask Media...
+2025-05-22 18:30:09,833 - __main__ - INFO - Generated 5 trading signals
+2025-05-22 18:30:09,841 - asx_trader.database - INFO - Saved 5 trading signals to database
+2025-05-22 18:30:22,414 - __main__ - INFO - Completed risk assessment: unknown risk
+2025-05-22 18:30:22,768 - asx_trader.broker - INFO - Retrieved account balance from IG API: $0.00
+2025-05-22 18:30:22,768 - asx_trader.broker - INFO - Account ID: PU7RJ
+2025-05-22 18:30:22,768 - asx_trader.broker - INFO - Account Type: CFD
+2025-05-22 18:30:22,768 - asx_trader.broker - INFO - Account Status: SUSPENDED_FROM_DEALING
+2025-05-22 18:30:23,136 - asx_trader.broker - ERROR - Could not find matching epic for symbol: BHP
+2025-05-22 18:30:23,136 - __main__ - INFO - Order executed: SELL 2 BHP - Result: ERROR
+2025-05-22 18:30:23,137 - __main__ - INFO - Generated 1 trading orders
+2025-05-22 18:30:23,143 - asx_trader.database - INFO - Saved 1 trading orders to database
+2025-05-22 18:30:23,143 - __main__ - INFO - Trading cycle completed at 2025-05-22 18:30:23.143466 (duration: 0:00:58.149960)
+2025-05-22 18:30:23,155 - asx_trader.utils - INFO - Next run scheduled for: 2025-05-23 10:00:23 AEST
+2025-05-22 18:30:23,160 - asx_trader.database - INFO - Recorded run history. Next run scheduled at 2025-05-23 10:00:23.155135+10:00
