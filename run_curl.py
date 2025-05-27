@@ -10,7 +10,6 @@ import logging
 import datetime
 import argparse
 import traceback
-import pytz
 from dotenv import load_dotenv
 
 # Set up logging early
@@ -33,11 +32,55 @@ try:
     from asx_trader.risk import RiskManagement
     from asx_trader.database import Database
     from asx_trader.utils import is_market_open, get_next_run_time
-    from asx_trader.curl_openai import openai_client  # Test the client early
+    from asx_trader.curl_openai import openai_client
+    from asx_trader.broker import broker
 except Exception as e:
     logger.error(f"Error importing modules: {e}")
     traceback.print_exc()
     sys.exit(1)
+
+def calculate_position_size(symbol, signal, risk_level, market_data, max_position=Config.MAX_POSITION_SIZE):
+    """
+    Calculate appropriate position size based on signal and risk level.
+    
+    Args:
+        symbol: Stock symbol
+        signal: Trading signal (BUY, SELL, HOLD)
+        risk_level: Risk assessment level (Low, Medium, High, Extreme)
+        market_data: Market data dictionary
+        max_position: Maximum position size in dollars
+        
+    Returns:
+        int: Quantity of shares to trade
+    """
+    # Default to 0 if not a BUY or SELL signal
+    if signal not in ["BUY", "SELL"]:
+        return 0
+    
+    # Get current price from market data
+    price = 0
+    if symbol in market_data:
+        price = market_data[symbol].get("current_price", 0)
+    
+    # If we couldn't get a price, we can't calculate quantity
+    if price <= 0:
+        return 0
+    
+    # Adjust position size based on risk level
+    risk_factor = {
+        "Low": 1.0,
+        "Medium": 0.7, 
+        "High": 0.4,
+        "Extreme": 0.2
+    }.get(risk_level, 0.5)
+    
+    # Calculate dollar amount
+    position_dollars = max_position * risk_factor
+    
+    # Calculate quantity (round down to nearest whole share)
+    quantity = int(position_dollars / price)
+    
+    return quantity
 
 def run_trading_cycle(args, db):
     """Run a single trading cycle"""
@@ -108,10 +151,89 @@ def run_trading_cycle(args, db):
         )
         logger.info(f"Completed risk assessment: {risk_assessment.get('overall_risk_level', 'unknown')} risk")
         
-        # 6. Print summary of results
+        # 6. Generate orders based on signals
+        orders = []
+        executed_orders = []
+        
+        for signal in signals:
+            symbol = signal.get("symbols", ["MARKET"])[0] if signal.get("symbols") else "MARKET"
+            signal_type = signal.get("signal", "NONE")
+            
+            # Skip if not an actionable symbol or signal
+            if symbol == "MARKET" or signal_type not in ["BUY", "SELL"]:
+                continue
+                
+            # Get risk level for this symbol
+            symbol_risks = risk_assessment.get("symbol_risks", [])
+            symbol_risk = "Medium"  # Default
+            for risk in symbol_risks:
+                if risk.get("symbol") == symbol:
+                    symbol_risk = risk.get("risk_level", "Medium")
+                    break
+            
+            # Calculate quantity
+            quantity = calculate_position_size(
+                symbol, 
+                signal_type, 
+                symbol_risk, 
+                market_data, 
+                Config.MAX_POSITION_SIZE
+            )
+            
+            if quantity > 0:
+                # Create order object
+                order = {
+                    "symbol": symbol,
+                    "action": signal_type,
+                    "quantity": quantity,
+                    "risk_level": symbol_risk,
+                    "estimated_cost": quantity * market_data.get(symbol, {}).get("current_price", 0),
+                    "news_id": signal.get("news_id")
+                }
+                
+                orders.append(order)
+                
+                # Execute the order if trading is enabled
+                if Config.TRADING_ENABLED and not args.simulate:
+                    try:
+                        # Execute through broker API
+                        execution_result = broker.execute_trade(
+                            symbol=symbol,
+                            direction=signal_type,
+                            quantity=quantity
+                        )
+                        
+                        # Add execution result to order
+                        order["execution_result"] = execution_result
+                        executed_orders.append(order)
+                        
+                        logger.info(f"Order executed: {signal_type} {quantity} {symbol} - Result: {execution_result['status']}")
+                    except Exception as e:
+                        logger.error(f"Error executing order: {e}")
+                        order["execution_result"] = {"status": "ERROR", "reason": str(e)}
+                        executed_orders.append(order)
+                else:
+                    # Simulated execution
+                    order["execution_result"] = {
+                        "status": "SIMULATED",
+                        "dealReference": f"SIM-{len(executed_orders)}",
+                        "details": "Trading disabled or simulation mode"
+                    }
+                    executed_orders.append(order)
+                    logger.info(f"Order simulated: {signal_type} {quantity} {symbol}")
+        
+        logger.info(f"Generated {len(orders)} trading orders")
+        orders_created = len(orders)
+        
+        # Save orders to database
+        if executed_orders:
+            db.save_trading_orders(executed_orders)
+        
+        # 7. Print summary of results
         print("\n===== ASX Trader Results (Curl Version) =====")
         print(f"Analyzed {len(news_items)} news items for {len(symbols)} symbols")
         print(f"Generated {len(signals)} trading signals")
+        print(f"Created {len(orders)} trading orders")
         print(f"Overall market risk: {risk_assessment.get('overall_risk_level', 'unknown')}")
         
         print("\nTop Trading Signals:")
@@ -125,6 +247,19 @@ def run_trading_cycle(args, db):
             print(f"   News: {signal.get('headline', '')[:80]}...")
             print(f"   Reason: {reason}")
             print()
+        
+        if executed_orders:
+            print("\nTrading Orders:")
+            for i, order in enumerate(executed_orders[:5], 1):
+                price = market_data.get(order["symbol"], {}).get("current_price", 0)
+                total = order["quantity"] * price
+                status = order["execution_result"]["status"]
+                print(f"{i}. {order['action']} {order['quantity']} {order['symbol']} @ ${price:.2f} = ${total:.2f}")
+                print(f"   Risk Level: {order['risk_level']}")
+                print(f"   Status: {status}")
+                if "dealReference" in order["execution_result"]:
+                    print(f"   Reference: {order['execution_result']['dealReference']}")
+                print()
         
     except Exception as e:
         logger.error(f"Error in trading cycle: {e}")
@@ -145,6 +280,7 @@ def main():
     parser.add_argument("--news-limit", type=int, default=10, help="Maximum number of news items to fetch")
     parser.add_argument("--run-once", action="store_true", help="Run once and exit")
     parser.add_argument("--force-run", action="store_true", help="Force run even if market is closed")
+    parser.add_argument("--simulate", action="store_true", help="Simulate trades without execution")
     args = parser.parse_args()
     
     # Load environment variables
@@ -168,6 +304,15 @@ def main():
     db = Database()
     
     try:
+        # Check if trading is enabled
+        if Config.TRADING_ENABLED:
+            if Config.BROKER_ACCOUNT_TYPE == "LIVE":
+                logger.warning("⚠️ TRADING IS ENABLED WITH A LIVE ACCOUNT - REAL MONEY WILL BE USED ⚠️")
+            else:
+                logger.info("Trading is enabled with a DEMO account")
+        else:
+            logger.info("Trading is disabled, orders will be simulated")
+        
         # Run once if specified
         if args.run_once:
             status, symbols_analyzed, signals_generated, orders_created = run_trading_cycle(args, db)
@@ -205,8 +350,7 @@ def main():
                 )
                 
                 # Calculate wait time until next run
-                aest = pytz.timezone("Australia/Sydney")
-                wait_seconds = (next_run - datetime.datetime.now(aest)).total_seconds()
+                wait_seconds = (next_run - datetime.datetime.now()).total_seconds()
                 logger.info(f"Next run scheduled at {next_run} (waiting {wait_seconds/60:.1f} minutes)")
                 
                 # Wait until next run time

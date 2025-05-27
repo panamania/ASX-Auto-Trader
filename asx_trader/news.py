@@ -1,26 +1,23 @@
 
 """
-News collector module using NewsData.io for ASX stock news.
+News collector module for ASX stock news using Google News RSS.
 """
 import logging
 import requests
 import json
 import random
+import html
+import re
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 from asx_trader.config import Config
 
 logger = logging.getLogger(__name__)
 
 class ASXNewsCollector:
-    """Collects news from NewsData.io with focus on ASX stocks"""
+    """Collects news from ASX"""
     def __init__(self):
         self.newsdata_api_key = Config.NEWSDATA_API_KEY
-        self.use_newsdata_api = bool(self.newsdata_api_key)
-        
-        # Cache for news data to reduce API calls
-        self.cache = {}
-        self.cache_expiry = {}
-        self.cache_duration = timedelta(hours=3)  # Cache for 3 hours
         
     def fetch_latest_news(self, symbols=None, limit=None, market_wide=True):
         """
@@ -36,39 +33,60 @@ class ASXNewsCollector:
         """
         logger.info(f"Fetching news for {'market-wide' if market_wide else symbols}")
         
-        # Set default limit
-        if limit is None:
-            limit = 20 if market_wide else 10
-        
-        # Cache key for this request
-        cache_key = f"news_{market_wide}_{'-'.join(symbols or [])}"
-        
-        # Check cache first
-        if cache_key in self.cache and datetime.now() < self.cache_expiry.get(cache_key, datetime.min):
-            logger.info("Using cached news data")
-            return self.cache[cache_key][:limit]
-        
         try:
+            # Set default limit based on whether we're doing market-wide or specific symbols
+            if limit is None:
+                limit = 20 if market_wide else 10
+            
+            # Try to get real news first
             news_items = []
             
-            if self.use_newsdata_api:
-                if market_wide:
-                    # Fetch market-wide Australian financial news
-                    market_news = self._fetch_newsdata_market_news(limit=limit)
-                    news_items.extend(market_news)
-                
-                # Fetch specific news for each symbol if provided
-                if symbols:
-                    for symbol in symbols[:5]:  # Limit to 5 symbols to avoid too many API calls
-                        symbol_news = self._fetch_newsdata_symbol_news(symbol, limit=3)
-                        news_items.extend(symbol_news)
+            # First try Google News RSS for specified symbols
+            if symbols:
+                for symbol in symbols[:min(5, len(symbols))]:  # Limit to 5 symbols to avoid too many requests
+                    symbol_news = self._fetch_google_news_rss(symbol, limit=5)
+                    news_items.extend(symbol_news)
+                    
+                logger.info(f"Retrieved {len(news_items)} news items from Google News RSS")
             
-            # If we couldn't get enough news from the API, generate mock data
+            # Add market-wide news if requested
+            if market_wide:
+                market_news = self._fetch_google_news_rss("ASX", limit=limit)
+                news_items.extend(market_news)
+                logger.info(f"Added {len(market_news)} market-wide news items from Google News RSS")
+            
+            # Then try NewsData.io as backup
+            if self.newsdata_api_key and len(news_items) < limit:
+                try:
+                    if market_wide:
+                        newsdata_news = self._fetch_newsdata_market_news(limit=limit)
+                        news_items.extend(newsdata_news)
+                        logger.info(f"Retrieved {len(newsdata_news)} news items from NewsData.io market news")
+                    
+                    # If we have specific symbols, get company news for each
+                    if symbols and len(symbols) > 0:
+                        company_news = self._fetch_newsdata_company_news(symbols, limit=limit)
+                        news_items.extend(company_news)
+                        logger.info(f"Retrieved company news from NewsData.io")
+                except Exception as e:
+                    logger.error(f"Error fetching news from NewsData.io: {e}")
+            
+            # If we don't have enough news, try ASX announcements
+            if len(news_items) < limit:
+                try:
+                    if market_wide or not symbols:
+                        asx_news = self._fetch_asx_announcements(limit=limit)
+                        news_items.extend(asx_news)
+                    else:
+                        for symbol in symbols[:10]:  # Limit to 10 symbols for specific fetches
+                            symbol_news = self._fetch_asx_announcements(symbol=symbol, limit=5)
+                            news_items.extend(symbol_news)
+                except Exception as e:
+                    logger.error(f"Error fetching ASX announcements: {e}")
+            
+            # If we still don't have enough news, generate mock data
             if len(news_items) < limit / 2:
-                logger.warning(f"Not enough news from NewsData.io ({len(news_items)}), adding mock news")
-                mock_news = self._generate_mock_news(
-                    symbols, limit - len(news_items), market_wide
-                )
+                mock_news = self._generate_mock_news(symbols, limit - len(news_items), market_wide)
                 news_items.extend(mock_news)
             
             # Deduplicate and limit
@@ -81,223 +99,294 @@ class ASXNewsCollector:
                     if len(unique_news) >= limit:
                         break
             
-            # Cache the results
-            self.cache[cache_key] = unique_news
-            self.cache_expiry[cache_key] = datetime.now() + self.cache_duration
-            
             logger.info(f"Fetched {len(unique_news)} news items")
             return unique_news
             
         except Exception as e:
-            logger.error(f"Error fetching news: {e}")
+            logger.error(f"Error fetching ASX news: {e}")
             # Fall back to mock data
             return self._generate_mock_news(symbols, limit, market_wide)
     
-    def _fetch_newsdata_market_news(self, limit=10):
-        """
-        Fetch financial news from NewsData.io for the Australian market.
-        
-        Args:
-            limit: Maximum number of news items to return.
-            
-        Returns:
-            list: List of news items
-        """
+    def _fetch_google_news_rss(self, symbol, limit=10):
+        """Fetch news from Google News RSS for ASX symbols"""
         try:
-            url = "https://newsdata.io/api/1/news"
+            # Format the URL to search for ASX:SYMBOL format
+            url = f"https://news.google.com/rss/search?q=ASX:{symbol}&hl=en-AU&gl=AU&ceid=AU:en"
             
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+            
+            response = requests.get(url, headers=headers, timeout=10)
+            
+            if response.status_code != 200:
+                logger.warning(f"Failed to fetch Google News RSS: {response.status_code}")
+                return []
+            
+            # Parse XML
+            try:
+                root = ET.fromstring(response.content)
+                items = root.findall('.//item')
+                
+                news_items = []
+                for i, item in enumerate(items[:limit]):
+                    title_elem = item.find('title')
+                    link_elem = item.find('link')
+                    date_elem = item.find('pubDate')
+                    description_elem = item.find('description')
+                    
+                    if title_elem is None:
+                        continue
+                        
+                    title = title_elem.text
+                    link = link_elem.text if link_elem is not None else ""
+                    date_str = date_elem.text if date_elem is not None else ""
+                    description = description_elem.text if description_elem is not None else ""
+                    
+                    # Clean the title and description
+                    title = html.unescape(title) if title else ""
+                    description = html.unescape(description) if description else ""
+                    
+                    # Create a unique ID
+                    news_id = f"google-{symbol}-{i}-{hash(title)}"
+                    
+                    # Convert date if possible
+                    published_date = date_str
+                    try:
+                        if date_str:
+                            dt = datetime.strptime(date_str, "%a, %d %b %Y %H:%M:%S %Z")
+                            published_date = dt.isoformat()
+                    except Exception:
+                        pass
+                    
+                    # Create news item
+                    news_item = {
+                        "id": news_id,
+                        "headline": title,
+                        "content": description,
+                        "symbols": [symbol],
+                        "published_date": published_date,
+                        "source": "Google News",
+                        "url": link,
+                        "category": "stock"
+                    }
+                    
+                    news_items.append(news_item)
+                
+                return news_items
+                
+            except ET.ParseError as e:
+                logger.error(f"Error parsing Google News RSS XML: {e}")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error fetching Google News RSS for {symbol}: {e}")
+            return []
+    
+    def _fetch_newsdata_market_news(self, limit=10):
+        """Fetch market news from NewsData.io API"""
+        try:
+            if not self.newsdata_api_key:
+                return []
+                
+            url = f"https://newsdata.io/api/1/news"
             params = {
                 "apikey": self.newsdata_api_key,
                 "country": "au",  # Australia
                 "category": "business",  # Business category
-                "language": "en",  # English
-                "size": limit
+                "language": "en",   # English
+                "size": min(limit, 20)  # Maximum allowed is 20 for free tier
             }
             
             response = requests.get(url, params=params)
-            response.raise_for_status()
             
-            data = response.json()
-            
-            if data.get("status") != "success":
-                logger.warning(f"NewsData.io API returned error: {data.get('results', {}).get('message')}")
+            if response.status_code != 200:
+                logger.warning(f"Failed to fetch NewsData.io market news: {response.status_code} - {response.text}")
                 return []
             
+            news_data = response.json()
+            if not news_data or "results" not in news_data or not news_data["results"]:
+                logger.warning("Invalid response from NewsData.io API")
+                return []
+                
+            # Process news items
             news_items = []
-            results = data.get("results", [])
-            
-            for idx, article in enumerate(results):
-                # Extract article data
-                news_id = article.get("article_id") or f"newsdata-{idx}"
-                title = article.get("title", "")
-                description = article.get("description", "")
-                content = article.get("content", description)
-                source = article.get("source_id", "")
-                published = article.get("pubDate", "")
+            for idx, item in enumerate(news_data["results"][:limit]):
+                # Extract potential ASX symbols from content
+                symbols = self._extract_asx_symbols_from_text(item.get("title", "") + " " + item.get("description", ""))
                 
-                # Extract ASX symbols mentioned in the content
-                symbols = self._extract_asx_symbols_from_text(title + " " + content)
+                # Skip news items without publication date
+                if not item.get("pubDate"):
+                    continue
                 
-                # Create news item
-                news_item = {
-                    "id": news_id,
-                    "headline": title,
-                    "content": content or description,
+                news_items.append({
+                    "id": f"newsdata-{item.get('article_id', idx)}",
+                    "headline": item.get("title", ""),
+                    "content": item.get("description", ""),
                     "symbols": symbols,
-                    "published_date": published,
-                    "source": source,
-                    "url": article.get("link", ""),
-                    "data_source": "NewsData.io",
-                    "sentiment": self._estimate_sentiment(title + " " + content)
-                }
+                    "published_date": item.get("pubDate", ""),
+                    "source": item.get("source_id", "NewsData"),
+                    "url": item.get("link", ""),
+                    "category": "business"
+                })
                 
-                news_items.append(news_item)
-            
             return news_items
-            
+                
         except Exception as e:
-            logger.error(f"Error fetching market news from NewsData.io: {e}")
+            logger.error(f"Error fetching NewsData.io market news: {e}")
             return []
     
-    def _fetch_newsdata_symbol_news(self, symbol, limit=5):
-        """
-        Fetch news from NewsData.io for a specific ASX symbol.
-        
-        Args:
-            symbol: The stock symbol to fetch news for.
-            limit: Maximum number of news items to return.
-            
-        Returns:
-            list: List of news items for the symbol
-        """
+    def _fetch_newsdata_company_news(self, symbols, limit=10):
+        """Fetch company-specific news from NewsData.io API"""
         try:
-            url = "https://newsdata.io/api/1/news"
+            if not self.newsdata_api_key or not symbols:
+                return []
             
+            # Create keywords for the symbols
+            # Convert ["BHP", "CBA"] to "(BHP OR CBA)"
+            keywords = " OR ".join(symbols)
+            keywords = f"({keywords})"
+            
+            url = f"https://newsdata.io/api/1/news"
             params = {
                 "apikey": self.newsdata_api_key,
-                "q": f"ASX {symbol}",  # Search for ASX + symbol
                 "country": "au",  # Australia
-                "language": "en",  # English
-                "size": limit
+                "category": "business",  # Business category
+                "language": "en",   # English
+                "q": keywords,      # Search query for the symbols
+                "size": min(limit, 20)  # Maximum allowed is 20 for free tier
             }
             
             response = requests.get(url, params=params)
-            response.raise_for_status()
             
-            data = response.json()
-            
-            if data.get("status") != "success":
-                logger.warning(f"NewsData.io API returned error: {data.get('results', {}).get('message')}")
+            if response.status_code != 200:
+                logger.warning(f"Failed to fetch NewsData.io company news: {response.status_code} - {response.text}")
                 return []
             
+            news_data = response.json()
+            if not news_data or "results" not in news_data or not news_data["results"]:
+                logger.warning("No company news found from NewsData.io API")
+                return []
+                
+            # Process news items
             news_items = []
-            results = data.get("results", [])
-            
-            for idx, article in enumerate(results):
-                # Extract article data
-                news_id = article.get("article_id") or f"newsdata-{symbol}-{idx}"
-                title = article.get("title", "")
-                description = article.get("description", "")
-                content = article.get("content", description)
-                source = article.get("source_id", "")
-                published = article.get("pubDate", "")
+            for idx, item in enumerate(news_data["results"][:limit]):
+                # Find which symbols are mentioned
+                mentioned_symbols = []
+                text = (item.get("title", "") + " " + item.get("description", "")).upper()
+                for symbol in symbols:
+                    if symbol in text:
+                        mentioned_symbols.append(symbol)
                 
-                # Create news item with the specified symbol
-                news_item = {
-                    "id": news_id,
-                    "headline": title,
-                    "content": content or description,
-                    "symbols": [symbol],  # Since we searched for this symbol specifically
-                    "published_date": published,
-                    "source": source,
-                    "url": article.get("link", ""),
-                    "data_source": "NewsData.io",
-                    "sentiment": self._estimate_sentiment(title + " " + content)
-                }
+                # If no symbols found, try to extract them
+                if not mentioned_symbols:
+                    mentioned_symbols = self._extract_asx_symbols_from_text(text)
+                    # Filter to only include symbols from our list
+                    mentioned_symbols = [s for s in mentioned_symbols if s in symbols]
                 
-                news_items.append(news_item)
-            
+                # Skip news without any symbols or publication date
+                if not mentioned_symbols or not item.get("pubDate"):
+                    continue
+                
+                news_items.append({
+                    "id": f"newsdata-company-{item.get('article_id', idx)}",
+                    "headline": item.get("title", ""),
+                    "content": item.get("description", ""),
+                    "symbols": mentioned_symbols,
+                    "published_date": item.get("pubDate", ""),
+                    "source": item.get("source_id", "NewsData"),
+                    "url": item.get("link", ""),
+                    "category": "company"
+                })
+                
             return news_items
-            
+                
         except Exception as e:
-            logger.error(f"Error fetching symbol news from NewsData.io for {symbol}: {e}")
+            logger.error(f"Error fetching NewsData.io company news: {e}")
             return []
     
     def _extract_asx_symbols_from_text(self, text):
-        """
-        Extract potential ASX stock symbols from text.
-        This is a simple heuristic and may not catch all mentions.
+        """Extract potential ASX stock symbols from text."""
+        # Basic pattern: look for 3-letter uppercase words that might be stock codes
+        # This is a simple approach - more sophisticated methods could be used
+        pattern = r'\b[A-Z]{3}\b'
+        matches = re.findall(pattern, text)
         
-        Args:
-            text: Text to analyze for ASX symbols
-            
-        Returns:
-            list: List of potential ASX symbols
-        """
-        import re
+        # Exclude common non-stock 3-letter words
+        exclude_words = {'THE', 'AND', 'FOR', 'BUT', 'NOT', 'NEW', 'NOW', 'HAS', 'HAD', 'WHO', 'WHY', 'HOW', 'ALL'}
         
-        # Look for patterns like "ASX: BHP" or "BHP.AX" or standalone 3-letter codes
-        asx_patterns = [
-            r'ASX:\s*([A-Z]{3})',  # ASX: ABC
-            r'ASX\.[A-Z]{3}\.([A-Z]{3})',  # ASX.ASX.ABC
-            r'([A-Z]{3})\.AX',  # ABC.AX
-            r'\b([A-Z]{3})\b'  # Standalone ABC
-        ]
+        # Filter out excluded words
+        symbols = [match for match in matches if match not in exclude_words]
         
-        # Common ASX symbols to validate matches
-        common_asx = set([
-            'BHP', 'CBA', 'NAB', 'WBC', 'ANZ', 'RIO', 'CSL', 'WES', 'TLS', 'FMG',
-            'GMG', 'MQG', 'TCL', 'WOW', 'NCM', 'STO', 'AMC', 'S32', 'QBE', 'BXB'
-        ])
+        # Remove duplicates
+        symbols = list(set(symbols))
         
-        symbols = set()
-        
-        for pattern in asx_patterns:
-            matches = re.findall(pattern, text)
-            for match in matches:
-                # Prioritize common ASX symbols
-                if match in common_asx:
-                    symbols.add(match)
-                # Otherwise, only add if it looks like an ASX symbol (3 letters)
-                elif len(match) == 3 and match.isalpha() and match.isupper():
-                    symbols.add(match)
-        
-        return list(symbols)
+        return symbols
     
-    def _estimate_sentiment(self, text):
-        """
-        Estimate the sentiment of a news article based on simple keyword matching.
-        
-        Args:
-            text: The text to analyze
+    def _fetch_asx_announcements(self, symbol=None, limit=10):
+        """Fetch company announcements from ASX"""
+        try:
+            url = "https://www.asx.com.au/asx/1/company/announcements"
+            params = {
+                "count": limit,
+                "market_sensitive": "true"  # Focus on market-sensitive announcements
+            }
             
-        Returns:
-            str: "positive", "negative", or "neutral"
-        """
-        text = text.lower()
-        
-        positive_words = [
-            'gain', 'profit', 'rise', 'up', 'surge', 'jump', 'positive', 'growth',
-            'increase', 'higher', 'beat', 'exceed', 'strong', 'success', 'improved',
-            'bullish', 'upgrade', 'opportunity'
-        ]
-        
-        negative_words = [
-            'loss', 'decline', 'drop', 'down', 'fall', 'negative', 'decrease',
-            'lower', 'miss', 'weak', 'poor', 'fail', 'bearish', 'downgrade',
-            'risk', 'concern', 'problem', 'trouble', 'challenge'
-        ]
-        
-        positive_count = sum(1 for word in positive_words if word in text)
-        negative_count = sum(1 for word in negative_words if word in text)
-        
-        if positive_count > negative_count * 1.5:
-            return "positive"
-        elif negative_count > positive_count * 1.5:
-            return "negative"
-        else:
-            return "neutral"
+            if symbol:
+                params["code"] = symbol
             
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+            
+            response = requests.get(url, params=params, headers=headers)
+            if response.status_code != 200:
+                logger.warning(f"Failed to fetch ASX announcements, status code: {response.status_code}")
+                return []
+            
+            try:
+                data = response.json()
+                if "data" not in data:
+                    return []
+                
+                announcements = data["data"]
+                result = []
+                
+                for idx, announcement in enumerate(announcements):
+                    # Extract relevant fields
+                    news_id = announcement.get("id", f"asx-{idx}")
+                    headline = announcement.get("headline", "")
+                    ticker = announcement.get("ticker", "")
+                    published_date = announcement.get("date", "")
+                    
+                    # Try to get the announcement text if available
+                    content = announcement.get("text", "")
+                    if not content:
+                        content = f"ASX announcement from {ticker}: {headline}"
+                    
+                    # Create a news item
+                    news_item = {
+                        "id": news_id,
+                        "headline": headline,
+                        "content": content,
+                        "symbols": [ticker] if ticker else [],
+                        "published_date": published_date,
+                        "source": "ASX Announcements",
+                        "url": announcement.get("url", ""),
+                        "category": "announcement"
+                    }
+                    
+                    result.append(news_item)
+                
+                return result
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse ASX announcement JSON")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error fetching ASX announcements: {e}")
+            return []
+    
     def _generate_mock_news(self, symbols=None, limit=10, market_wide=True):
         """Generate mock news data for testing purposes"""
         news_items = []
@@ -399,7 +488,7 @@ class ASXNewsCollector:
                 
                 # Create news item
                 news_item = {
-                    "id": f"mock-news-{base_id + i}",
+                    "id": f"news-{base_id + i}",
                     "headline": headline,
                     "content": content,
                     "symbols": news_symbols,
@@ -407,7 +496,8 @@ class ASXNewsCollector:
                     "source": random.choice(["ASX Announcements", "Financial Review", "The Australian", "Bloomberg", "Reuters"]),
                     "sentiment": template["sentiment"],
                     "type": template["type"],
-                    "data_source": "Generated"
+                    "category": template["type"],
+                    "generated": True
                 }
                 
                 news_items.append(news_item)
@@ -430,34 +520,33 @@ class ASXNewsCollector:
         """
         logger.info(f"Fetching specific news for {symbol}")
         
-        # Cache key for this request
-        cache_key = f"news_symbol_{symbol}_{limit}"
-        
-        # Check cache first
-        if cache_key in self.cache and datetime.now() < self.cache_expiry.get(cache_key, datetime.min):
-            logger.info(f"Using cached news data for {symbol}")
-            return self.cache[cache_key]
-        
-        # First try to get real news for the symbol
+        # First try Google News RSS
         try:
-            if self.use_newsdata_api:
-                symbol_news = self._fetch_newsdata_symbol_news(symbol, limit=limit)
-                if symbol_news:
-                    # Cache the results
-                    self.cache[cache_key] = symbol_news
-                    self.cache_expiry[cache_key] = datetime.now() + self.cache_duration
-                    return symbol_news
+            google_news = self._fetch_google_news_rss(symbol, limit=limit)
+            if google_news:
+                return google_news
         except Exception as e:
-            logger.error(f"Error fetching NewsData.io news for {symbol}: {e}")
+            logger.error(f"Error fetching Google News RSS for {symbol}: {e}")
+        
+        # Then try NewsData.io for company news
+        if self.newsdata_api_key:
+            try:
+                newsdata_news = self._fetch_newsdata_company_news([symbol], limit=limit)
+                if newsdata_news:
+                    return newsdata_news
+            except Exception as e:
+                logger.error(f"Error fetching NewsData.io company news for {symbol}: {e}")
+        
+        # Then try ASX announcements
+        try:
+            announcements = self._fetch_asx_announcements(symbol=symbol, limit=limit)
+            if announcements:
+                return announcements
+        except Exception as e:
+            logger.error(f"Error fetching ASX announcements for {symbol}: {e}")
         
         # Fall back to generated news
-        mock_news = self._generate_mock_news(symbols=[symbol], limit=limit, market_wide=False)
-        
-        # Cache the results
-        self.cache[cache_key] = mock_news
-        self.cache_expiry[cache_key] = datetime.now() + self.cache_duration
-        
-        return mock_news
+        return self._generate_mock_news(symbols=[symbol], limit=limit, market_wide=False)
             
     def fetch_market_summaries(self):
         """
@@ -468,33 +557,23 @@ class ASXNewsCollector:
         """
         logger.info("Fetching market summaries")
         
-        # Cache key for this request
-        cache_key = "market_summaries"
-        
-        # Check cache first
-        if cache_key in self.cache and datetime.now() < self.cache_expiry.get(cache_key, datetime.min):
-            logger.info("Using cached market summaries")
-            return self.cache[cache_key]
-        
-        # Try to get real market summaries
+        # Try Google News RSS for ASX
         try:
-            if self.use_newsdata_api:
-                # Get market news with a more specific query
-                market_news = self._fetch_newsdata_market_news(limit=5)
-                if market_news:
-                    # Cache the results
-                    self.cache[cache_key] = market_news
-                    self.cache_expiry[cache_key] = datetime.now() + self.cache_duration
-                    return market_news
+            google_news = self._fetch_google_news_rss("ASX", limit=10)
+            if google_news:
+                return google_news
         except Exception as e:
-            logger.error(f"Error fetching market summaries: {e}")
+            logger.error(f"Error fetching Google News RSS for market summaries: {e}")
+        
+        # Then try NewsData.io for market news
+        if self.newsdata_api_key:
+            try:
+                newsdata_news = self._fetch_newsdata_market_news(limit=5)
+                if newsdata_news:
+                    return newsdata_news
+            except Exception as e:
+                logger.error(f"Error fetching NewsData.io market news: {e}")
         
         # Fall back to generated news
-        mock_news = self._generate_mock_news(limit=5, market_wide=True)
-        
-        # Cache the results
-        self.cache[cache_key] = mock_news
-        self.cache_expiry[cache_key] = datetime.now() + self.cache_duration
-        
-        return mock_news
+        return self._generate_mock_news(limit=5, market_wide=True)
 
