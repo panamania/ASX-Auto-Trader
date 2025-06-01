@@ -136,12 +136,12 @@ class GPTEnhancedPredictionEngine:
             """
             
             response = self.client.chat_completion(
-                model="o4-mini",
-                messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"}
+                #model="o4-mini",
+                #messages=[{"role": "user", "content": prompt}],
+                #response_format={"type": "json_object"},
                 model="o4-mini",  # Using o4-mini as specified
                 messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
+                response_format={"type": "json_object"}
                 # Note: removing temperature parameter to use default (1)
             )
             
