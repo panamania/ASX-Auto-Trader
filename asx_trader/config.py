@@ -17,6 +17,7 @@ class Config:
     # API Keys
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
     ASX_API_KEY = os.environ.get("ASX_API_KEY")
+    FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY")
     NEWSDATA_API_KEY = os.environ.get("NEWSDATA_API_KEY")
     BROKER_API_KEY = os.environ.get("BROKER_API_KEY")
     
