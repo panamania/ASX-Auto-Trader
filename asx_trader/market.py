@@ -1,5 +1,3 @@
-
-
 """
 Market scanning and data aggregation functions.
 """
@@ -16,11 +14,11 @@ class MarketScanner:
     """Scans the market for opportunities and gathers market data."""
 
     def __init__(self):
-        self.api_key = Config.ASX_API_KEY
+        self.finnhub_api_key = Config.FINNHUB_API_KEY
 
         # Use basic web scraping if API not configured
-        self.use_scraping = True if not self.api_key else False
-        self.base_url = "https://yfapi.net"
+        self.use_scraping = True if not self.finnhub_api_key else False
+        self.base_url = "https://finnhub.io/api/v1"
         self.scan_mode = Config.MARKET_SCAN_MODE
         self.sector_focus = Config.MARKET_SECTOR_FOCUS
         self.min_market_cap = Config.MIN_MARKET_CAP
@@ -37,7 +35,7 @@ class MarketScanner:
         logger.info(f"Getting ASX market symbols with scan mode: {self.scan_mode}")
         
         try:
-            # Get ASX stock list via Yahoo Finance or default list
+            # Get ASX stock list via Finnhub or default list
             all_symbols = self._get_asx_symbols()
             
             # Filter based on scan mode
@@ -45,6 +43,8 @@ class MarketScanner:
                 return self._get_sector_symbols(self.sector_focus, all_symbols)
             elif self.scan_mode == "filtered":
                 return self._get_filtered_symbols(all_symbols)
+            elif self.scan_mode == "trending":
+                return self._get_trending_symbols()
             else:
                 # Default to all symbols (full scan mode)
                 return all_symbols[:self.max_stocks]
@@ -86,57 +86,42 @@ class MarketScanner:
             "consumer": ["WOW", "WES", "COL", "DMP", "JBH", "HVN", "MTS", "LOV", "BKL", "TWE"]
         }
         
+        logger.warning("_get_sector_symbols is not fully supported by the Finnhub API.")
         # Return sector symbols or default to financial if sector not found
         return sector_symbols.get(sector.lower(), sector_symbols["financial"])
             
     def _get_filtered_symbols(self, all_symbols=None):
         """Get symbols based on custom filters."""
+        logger.warning("_get_filtered_symbols is not fully supported by the Finnhub API.")
         # For now, just return a selection of high-cap ASX symbols
         return ["BHP", "CBA", "CSL", "NAB", "WBC", "ANZ", "RIO", "WES", "TLS", "FMG"]
-            
-
-        logger.info(f"Getting market symbols with scan mode: {self.scan_mode}")
-
-        try:
-            if self.scan_mode == "sector":
-                return self._get_sector_symbols(self.sector_focus)
-            elif self.scan_mode == "filtered":
-                return self._get_filtered_symbols()
-            elif self.scan_mode == "trending":
-                return self._get_trending_symbols()
-            else:
-                logger.warning(f"Unknown scan mode '{self.scan_mode}', defaulting to trending symbols.")
-                return self._get_trending_symbols()
-        except Exception as e:
-            logger.error(f"Error getting market symbols: {e}")
-            return []
 
     def _get_trending_symbols(self):
-        """Get trending symbols using Yahoo Finance API."""
+        """Get trending symbols using Finnhub API."""
         try:
             response = requests.get(
-                f"{self.base_url}/v1/finance/trending/AU",
-                headers={"x-api-key": self.api_key, "accept": "application/json"}
+                f"{self.base_url}/news",
+                params={"category": "general", "token": self.finnhub_api_key}
             )
             response.raise_for_status()
-            data = response.json()
-            quotes = data.get("finance", {}).get("result", [])
-            if quotes and "quotes" in quotes[0]:
-                trending_symbols = [item["symbol"] for item in quotes[0]["quotes"]]
-                return trending_symbols[:self.max_stocks]
-            return []
+            news_data = response.json()
+            
+            # Extract symbols from news articles
+            symbols = []
+            for article in news_data[:10]:  # Get first 10 articles
+                if 'related' in article:
+                    symbols.extend(article['related'].split(',')[:2])
+            
+            # Filter for ASX symbols and return unique ones
+            asx_symbols = [s.strip() for s in symbols if s.strip() in self._get_asx_symbols()]
+            if asx_symbols:
+                return list(set(asx_symbols))[:self.max_stocks]
+            else:
+                return self._get_asx_symbols()[:10]  # Fallback to default symbols
+                
         except Exception as e:
             logger.error(f"Error fetching trending symbols: {e}")
-            return []
-
-    def _get_sector_symbols(self, sector):
-        logger.warning("_get_sector_symbols is not supported by the Yahoo Finance API.")
-        return []
-
-    def _get_filtered_symbols(self):
-        logger.warning("_get_filtered_symbols is not supported by the Yahoo Finance API.")
-        return []
-
+            return self._get_asx_symbols()[:10]  # Fallback to default symbols
 
     def get_market_data(self, symbols=None):
         """
@@ -179,51 +164,49 @@ class MarketScanner:
         return market_data
 
     def _get_symbol_data(self, symbol):
-        """Get market data for a single symbol using Yahoo Finance API."""
+        """Get market data for a single symbol using Finnhub API."""
         try:
-
-            # Use Yahoo Finance as a reliable source for stock data
-            return self._get_yahoo_symbol_data(symbol)
+            # Use Finnhub as a reliable source for stock data
+            return self._get_finnhub_symbol_data(symbol)
         except Exception as e:
             logger.error(f"Error fetching data for {symbol}: {e}")
             # Return dummy data for testing
             return self._generate_dummy_data(symbol)
     
-    def _get_yahoo_symbol_data(self, symbol):
-        """Get market data for a single symbol from Yahoo Finance."""
+    def _get_finnhub_symbol_data(self, symbol):
+        """Get market data for a single symbol from Finnhub API."""
         try:
-            yahoo_symbol = f"{symbol}.AX"  # ASX stocks on Yahoo have .AX suffix
-            url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={yahoo_symbol}"
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            finnhub_symbol = f"{symbol}.AX"  # ASX stocks on Finnhub have .AX suffix
+            quote_url = f"{self.base_url}/quote"
+            
+            params = {
+                'symbol': finnhub_symbol,
+                'token': self.finnhub_api_key
             }
             
-            response = requests.get(url, headers=headers)
+            response = requests.get(quote_url, params=params)
             response.raise_for_status()
-            data = response.json()
+            quote_data = response.json()
             
-            if "quoteResponse" in data and "result" in data["quoteResponse"] and len(data["quoteResponse"]["result"]) > 0:
-                quote = data["quoteResponse"]["result"][0]
-                
-                # Extract relevant data
-                return {
-                    "symbol": symbol,
-                    "current_price": quote.get("regularMarketPrice", 0),
-                    "volume": quote.get("regularMarketVolume", 0),
-                    "price_change_pct": quote.get("regularMarketChangePercent", 0) / 100 if "regularMarketChangePercent" in quote else 0,
-                    "market_cap": quote.get("marketCap", 0),
-                    "52w_high": quote.get("fiftyTwoWeekHigh", 0),
-                    "52w_low": quote.get("fiftyTwoWeekLow", 0),
-                    "pe_ratio": quote.get("trailingPE", 0),
-                    "avg_volume": quote.get("averageDailyVolume3Month", 0),
-                    "source": "Yahoo Finance"
-                }
-            else:
-                logger.warning(f"No Yahoo Finance data found for {symbol}")
-                return self._generate_dummy_data(symbol)
-                
+            # Finnhub quote response format: {"c": current, "h": high, "l": low, "o": open, "pc": previous_close, "t": timestamp, "v": volume}
+            current_price = quote_data.get("c", 0)
+            previous_close = quote_data.get("pc", 0)
+            
+            return {
+                "symbol": symbol,
+                "current_price": current_price,
+                "volume": quote_data.get("v", 0),
+                "price_change_pct": ((current_price - previous_close) / previous_close) if previous_close > 0 else 0,
+                "market_cap": 0,  # Requires separate API call to /stock/profile2
+                "52w_high": quote_data.get("h", 0),  # This is daily high, not 52-week
+                "52w_low": quote_data.get("l", 0),   # This is daily low, not 52-week
+                "pe_ratio": 0,  # Requires separate API call
+                "avg_volume": 0,  # Not available in basic quote
+                "source": "Finnhub"
+            }
+            
         except Exception as e:
-            logger.error(f"Error fetching Yahoo Finance data for {symbol}: {e}")
+            logger.error(f"Error fetching Finnhub data for {symbol}: {e}")
             return self._generate_dummy_data(symbol)
     
     def _generate_dummy_data(self, symbol):
@@ -238,22 +221,10 @@ class MarketScanner:
             "market_cap": int(price * 10000000),
             "52w_high": round(price * 1.2, 2),
             "52w_low": round(price * 0.8, 2),
+            "pe_ratio": round(10 + random.random() * 20, 2),
+            "avg_volume": int(random.random() * 500000),
             "source": "Generated"
         }
-            
-
-            response = requests.get(
-                f"{self.base_url}/v6/finance/quote",
-                params={"symbols": symbol},
-                headers={"x-api-key": self.api_key, "accept": "application/json"}
-            )
-            response.raise_for_status()
-            data = response.json().get("quoteResponse", {}).get("result", [])
-            return data[0] if data else None
-        except Exception as e:
-            logger.error(f"Error fetching data for {symbol}: {e}")
-            return None
-
 
     def find_opportunities(self, market_data=None):
         """
@@ -273,16 +244,9 @@ class MarketScanner:
 
         logger.info(f"Scanning {len(market_data)} stocks for opportunities")
 
-        
-        # Apply opportunity filters
-        # These are example filters - customize based on your strategy
-
-        df = pd.DataFrame.from_dict(market_data, orient='index')
-
         opportunities = []
 
         try:
-
             # Manual filtering
             for symbol, data in market_data.items():
                 # Get all relevant data with defaults if missing
@@ -313,30 +277,10 @@ class MarketScanner:
                     continue
             
             # De-duplicate
-            if 'volume' in df.columns and 'averageDailyVolume3Month' in df.columns:
-                volume_filter = df['volume'] > df['averageDailyVolume3Month'] * 1.5
-                opportunities.extend(df[volume_filter].index.tolist())
-
-            if 'regularMarketPrice' in df.columns and 'fiftyTwoWeekHigh' in df.columns and 'fiftyTwoWeekLow' in df.columns:
-                high_filter = df['regularMarketPrice'] >= df['fiftyTwoWeekHigh'] * 0.95
-                opportunities.extend(df[high_filter].index.tolist())
-
-                low_filter = df['regularMarketPrice'] <= df['fiftyTwoWeekLow'] * 1.05
-                opportunities.extend(df[low_filter].index.tolist())
-
-            if 'regularMarketChangePercent' in df.columns:
-                movement_filter = abs(df['regularMarketChangePercent']) >= 3.0
-                opportunities.extend(df[movement_filter].index.tolist())
-
-
             opportunities = list(set(opportunities))
             logger.info(f"Found {len(opportunities)} potential opportunities")
             return opportunities
+            
         except Exception as e:
             logger.error(f"Error finding opportunities: {e}")
-
             return list(market_data.keys())[:5]  # Return first 5 symbols as fallback
-
-            return []
-
-
