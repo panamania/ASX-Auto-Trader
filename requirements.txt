@@ -5,3 +5,4 @@ pandas==2.1.1
 python-dotenv==1.0.0
 numpy==2.2.5
 pandas==2.2.3
+finnhub-python==2.4.23

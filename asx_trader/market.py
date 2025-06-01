@@ -5,6 +5,7 @@ import logging
 import requests
 import random
 import json
+import finnhub
 from concurrent.futures import ThreadPoolExecutor
 from asx_trader.config import Config
 
@@ -15,6 +16,17 @@ class MarketScanner:
 
     def __init__(self):
         self.finnhub_api_key = Config.FINNHUB_API_KEY
+
+        
+        # Initialize Finnhub client
+        self.finnhub_client = None
+        if self.finnhub_api_key:
+            try:
+                self.finnhub_client = finnhub.Client(api_key=self.finnhub_api_key)
+                logger.info("Finnhub client initialized successfully")
+            except Exception as e:
+                logger.error(f"Failed to initialize Finnhub client: {e}")
+                self.finnhub_client = None
 
         # Use basic web scraping if API not configured
         self.use_scraping = True if not self.finnhub_api_key else False
@@ -56,8 +68,19 @@ class MarketScanner:
             return ["BHP", "CBA", "NAB", "WBC", "ANZ", "RIO", "CSL", "WES", "TLS", "FMG"]
     
     def _get_asx_symbols(self):
-        """Get ASX stock symbols"""
-        # Top ASX stocks by market cap
+        """Get ASX stock symbols using Finnhub API or fallback to hardcoded list"""
+        if self.finnhub_client:
+            try:
+                # Try to get ASX symbols from Finnhub
+                symbols = self.finnhub_client.stock_symbols('AU')
+                asx_symbols = [s['symbol'].replace('.AX', '') for s in symbols if s['symbol'].endswith('.AX')]
+                if asx_symbols:
+                    logger.info(f"Retrieved {len(asx_symbols)} ASX symbols from Finnhub API")
+                    return asx_symbols[:100]  # Limit to top 100
+            except Exception as e:
+                logger.warning(f"Failed to get symbols from Finnhub API: {e}")
+        
+        # Fallback to hardcoded list
         asx_symbols = [
             "BHP", "CBA", "CSL", "NAB", "WBC", "ANZ", "FMG", "WES", "TLS", "RIO",
             "MQG", "NCM", "WOW", "GMG", "TCL", "STO", "WDS", "COL", "S32", "ALL",
@@ -71,7 +94,7 @@ class MarketScanner:
             "BKW", "ELD", "JBH", "ALD", "SDF", "DMP", "ARB", "CCP", "FLT", "ABC"
         ]
         
-        logger.info(f"Retrieved {len(asx_symbols)} ASX symbols")
+        logger.info(f"Using fallback list of {len(asx_symbols)} ASX symbols")
         return asx_symbols
             
     def _get_sector_symbols(self, sector, all_symbols=None):
@@ -86,18 +109,35 @@ class MarketScanner:
             "consumer": ["WOW", "WES", "COL", "DMP", "JBH", "HVN", "MTS", "LOV", "BKL", "TWE"]
         }
         
+
+        logger.info(f"Getting symbols for sector: {sector}")
+
         logger.warning("_get_sector_symbols is not fully supported by the Finnhub API.")
+
         # Return sector symbols or default to financial if sector not found
         return sector_symbols.get(sector.lower(), sector_symbols["financial"])
             
     def _get_filtered_symbols(self, all_symbols=None):
         """Get symbols based on custom filters."""
+
+        logger.info("Getting filtered symbols based on market cap and volume")
+
         logger.warning("_get_filtered_symbols is not fully supported by the Finnhub API.")
+
         # For now, just return a selection of high-cap ASX symbols
         return ["BHP", "CBA", "CSL", "NAB", "WBC", "ANZ", "RIO", "WES", "TLS", "FMG"]
 
     def _get_trending_symbols(self):
         """Get trending symbols using Finnhub API."""
+
+        if not self.finnhub_client:
+            logger.warning("Finnhub client not available for trending symbols")
+            return self._get_asx_symbols()[:10]
+            
+        try:
+            # Get general market news
+            news_data = self.finnhub_client.general_news('general')
+
         try:
             response = requests.get(
                 f"{self.base_url}/news",
@@ -105,18 +145,30 @@ class MarketScanner:
             )
             response.raise_for_status()
             news_data = response.json()
+
             
             # Extract symbols from news articles
             symbols = []
             for article in news_data[:10]:  # Get first 10 articles
+
+                if 'related' in article and article['related']:
+
                 if 'related' in article:
+
                     symbols.extend(article['related'].split(',')[:2])
             
             # Filter for ASX symbols and return unique ones
             asx_symbols = [s.strip() for s in symbols if s.strip() in self._get_asx_symbols()]
             if asx_symbols:
+
+                logger.info(f"Found {len(asx_symbols)} trending ASX symbols")
                 return list(set(asx_symbols))[:self.max_stocks]
             else:
+                logger.info("No trending ASX symbols found, using default list")
+
+                return list(set(asx_symbols))[:self.max_stocks]
+            else:
+
                 return self._get_asx_symbols()[:10]  # Fallback to default symbols
                 
         except Exception as e:
@@ -164,17 +216,67 @@ class MarketScanner:
         return market_data
 
     def _get_symbol_data(self, symbol):
+
+        """Get market data for a single symbol using Finnhub library."""
+        try:
+            # Use Finnhub library if available, otherwise fallback to direct API
+            if self.finnhub_client:
+                return self._get_finnhub_library_data(symbol)
+            else:
+                return self._get_finnhub_direct_api_data(symbol)
+
         """Get market data for a single symbol using Finnhub API."""
         try:
             # Use Finnhub as a reliable source for stock data
             return self._get_finnhub_symbol_data(symbol)
+
         except Exception as e:
             logger.error(f"Error fetching data for {symbol}: {e}")
             # Return dummy data for testing
             return self._generate_dummy_data(symbol)
     
+
+    def _get_finnhub_library_data(self, symbol):
+        """Get market data using the Finnhub Python library."""
+        try:
+            finnhub_symbol = f"{symbol}.AX"  # ASX stocks on Finnhub have .AX suffix
+            
+            # Get quote data
+            quote_data = self.finnhub_client.quote(finnhub_symbol)
+            
+            # Get company profile for additional data
+            try:
+                profile_data = self.finnhub_client.company_profile2(symbol=finnhub_symbol)
+                market_cap = profile_data.get('marketCapitalization', 0) * 1000000  # Convert from millions
+            except:
+                market_cap = 0
+            
+            current_price = quote_data.get("c", 0)
+            previous_close = quote_data.get("pc", 0)
+            
+            return {
+                "symbol": symbol,
+                "current_price": current_price,
+                "volume": quote_data.get("v", 0),
+                "price_change_pct": ((current_price - previous_close) / previous_close) if previous_close > 0 else 0,
+                "market_cap": market_cap,
+                "52w_high": quote_data.get("h", 0),  # This is daily high, not 52-week
+                "52w_low": quote_data.get("l", 0),   # This is daily low, not 52-week
+                "pe_ratio": 0,  # Would need separate API call
+                "avg_volume": 0,  # Not available in basic quote
+                "source": "Finnhub Library"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error fetching Finnhub library data for {symbol}: {e}")
+            return self._generate_dummy_data(symbol)
+    
+    def _get_finnhub_direct_api_data(self, symbol):
+        """Get market data for a single symbol from Finnhub API using direct requests."""
+
     def _get_finnhub_symbol_data(self, symbol):
         """Get market data for a single symbol from Finnhub API."""
+
         try:
             finnhub_symbol = f"{symbol}.AX"  # ASX stocks on Finnhub have .AX suffix
             quote_url = f"{self.base_url}/quote"
@@ -202,11 +304,19 @@ class MarketScanner:
                 "52w_low": quote_data.get("l", 0),   # This is daily low, not 52-week
                 "pe_ratio": 0,  # Requires separate API call
                 "avg_volume": 0,  # Not available in basic quote
+
+                "source": "Finnhub Direct API"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error fetching Finnhub direct API data for {symbol}: {e}")
+
                 "source": "Finnhub"
             }
             
         except Exception as e:
             logger.error(f"Error fetching Finnhub data for {symbol}: {e}")
+
             return self._generate_dummy_data(symbol)
     
     def _generate_dummy_data(self, symbol):
@@ -225,6 +335,33 @@ class MarketScanner:
             "avg_volume": int(random.random() * 500000),
             "source": "Generated"
         }
+
+
+    def get_company_news(self, symbol, days_back=7):
+        """Get company news using Finnhub library."""
+        if not self.finnhub_client:
+            logger.warning("Finnhub client not available for company news")
+            return []
+            
+        try:
+            import datetime
+            to_date = datetime.datetime.now()
+            from_date = to_date - datetime.timedelta(days=days_back)
+            
+            finnhub_symbol = f"{symbol}.AX"
+            news = self.finnhub_client.company_news(
+                finnhub_symbol, 
+                _from=from_date.strftime('%Y-%m-%d'), 
+                to=to_date.strftime('%Y-%m-%d')
+            )
+            
+            logger.info(f"Retrieved {len(news)} news articles for {symbol}")
+            return news
+            
+        except Exception as e:
+            logger.error(f"Error fetching news for {symbol}: {e}")
+            return []
+
 
     def find_opportunities(self, market_data=None):
         """
