@@ -1,17 +1,16 @@
 """
-Enhanced database module with position and alert tracking, merged with curl-based features.
-This version combines the original database functionality with enhanced features.
+Enhanced database module with position and alert tracking.
 """
 import os
 import sqlite3
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional
 from asx_trader.config import Config
 
 logger = logging.getLogger(__name__)
 
-class Database:
+class EnhancedDatabase:
     """Enhanced SQLite database for the trading system with position and alert tracking"""
     
     def __init__(self, db_path=None):
@@ -83,7 +82,7 @@ class Database:
                 )
                 ''')
                 
-                # Positions tracking (enhanced feature)
+                # Positions tracking
                 self.conn.execute('''
                 CREATE TABLE IF NOT EXISTS positions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,7 +104,7 @@ class Database:
                 )
                 ''')
                 
-                # Market alerts (enhanced feature)
+                # Market alerts
                 self.conn.execute('''
                 CREATE TABLE IF NOT EXISTS market_alerts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -120,7 +119,7 @@ class Database:
                 )
                 ''')
                 
-                # Portfolio performance tracking (enhanced feature)
+                # Portfolio performance tracking
                 self.conn.execute('''
                 CREATE TABLE IF NOT EXISTS portfolio_snapshots (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -134,7 +133,7 @@ class Database:
                 )
                 ''')
                 
-                # Market data history (enhanced feature)
+                # Market data history
                 self.conn.execute('''
                 CREATE TABLE IF NOT EXISTS market_data_history (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -192,18 +191,6 @@ class Database:
         try:
             with self.conn:
                 for order in orders:
-                    execution_result = order.get("execution_result", {})
-                    status = "simulated"
-                    
-                    # Determine status based on execution result
-                    if execution_result:
-                        if execution_result.get("status") == "SIMULATED":
-                            status = "simulated"
-                        elif execution_result.get("dealReference", "").startswith("SIM-"):
-                            status = "simulated"
-                        else:
-                            status = "executed"
-                    
                     self.conn.execute(
                         '''INSERT INTO trading_orders 
                            (timestamp, symbol, action, quantity, estimated_price, status) 
@@ -213,8 +200,8 @@ class Database:
                             order.get("symbol", ""),
                             order.get("action", ""),
                             order.get("quantity", 0),
-                            order.get("estimated_cost", 0) / max(order.get("quantity", 1), 1),
-                            status
+                            order.get("estimated_cost", 0) / order.get("quantity", 1),
+                            "simulated" if not order.get("execution_result", {}).get("order_id", "").startswith("sim-") else "executed"
                         )
                     )
             logger.info(f"Saved {len(orders)} trading orders to database")
@@ -243,8 +230,6 @@ class Database:
             logger.info(f"Recorded run history. Next run scheduled at {next_run}")
         except Exception as e:
             logger.error(f"Error recording run history: {e}")
-    
-    # Enhanced features below
     
     def save_position(self, position_data: Dict):
         """Save a new position to the database"""
@@ -341,7 +326,7 @@ class Database:
     def get_alerts(self, hours: int = 24, acknowledged: bool = False) -> List[Dict]:
         """Get recent alerts from database"""
         try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
+            cutoff_time = datetime.now() - datetime.timedelta(hours=hours)
             cursor = self.conn.execute(
                 '''SELECT * FROM market_alerts 
                    WHERE timestamp >= ? AND acknowledged = ? 
@@ -391,7 +376,7 @@ class Database:
     def get_portfolio_history(self, days: int = 30) -> List[Dict]:
         """Get portfolio performance history"""
         try:
-            cutoff_time = datetime.now() - timedelta(days=days)
+            cutoff_time = datetime.now() - datetime.timedelta(days=days)
             cursor = self.conn.execute(
                 '''SELECT * FROM portfolio_snapshots 
                    WHERE timestamp >= ? 
@@ -429,7 +414,7 @@ class Database:
     def get_market_data_history(self, symbol: str, days: int = 30) -> List[Dict]:
         """Get historical market data for a symbol"""
         try:
-            cutoff_time = datetime.now() - timedelta(days=days)
+            cutoff_time = datetime.now() - datetime.timedelta(days=days)
             cursor = self.conn.execute(
                 '''SELECT * FROM market_data_history 
                    WHERE symbol = ? AND timestamp >= ? 
@@ -444,7 +429,7 @@ class Database:
     def get_trading_performance(self, days: int = 30) -> Dict:
         """Get trading performance statistics"""
         try:
-            cutoff_time = datetime.now() - timedelta(days=days)
+            cutoff_time = datetime.now() - datetime.timedelta(days=days)
             
             # Get closed positions
             cursor = self.conn.execute(
@@ -477,7 +462,7 @@ class Database:
     def cleanup_old_data(self, days: int = 90):
         """Clean up old data to keep database size manageable"""
         try:
-            cutoff_time = datetime.now() - timedelta(days=days)
+            cutoff_time = datetime.now() - datetime.timedelta(days=days)
             
             with self.conn:
                 # Clean up old market data
@@ -501,230 +486,8 @@ class Database:
             logger.info(f"Cleaned up data older than {days} days")
         except Exception as e:
             logger.error(f"Error cleaning up old data: {e}")
-    
-    def get_api_usage_stats(self, hours: int = 24) -> Dict:
-        """Get API usage statistics for monitoring rate limits"""
-        try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
-            cursor = self.conn.execute(
-                '''SELECT endpoint, COUNT(*) as calls, SUM(tokens_used) as total_tokens,
-                   AVG(tokens_used) as avg_tokens, SUM(CASE WHEN success THEN 1 ELSE 0 END) as successful_calls
-                   FROM api_usage 
-                   WHERE timestamp >= ? 
-                   GROUP BY endpoint''',
-                (cutoff_time.isoformat(),)
-            )
-            
-            stats = {}
-            for row in cursor.fetchall():
-                stats[row[0]] = {
-                    'calls': row[1],
-                    'total_tokens': row[2],
-                    'avg_tokens': row[3],
-                    'successful_calls': row[4],
-                    'success_rate': (row[4] / row[1] * 100) if row[1] > 0 else 0
-                }
-            
-            return stats
-        except Exception as e:
-            logger.error(f"Error getting API usage stats: {e}")
-            return {}
-    
-    def get_recent_signals(self, hours: int = 24) -> List[Dict]:
-        """Get recent trading signals"""
-        try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
-            cursor = self.conn.execute(
-                '''SELECT * FROM trading_signals 
-                   WHERE timestamp >= ? 
-                   ORDER BY timestamp DESC''',
-                (cutoff_time.isoformat(),)
-            )
-            return [dict(row) for row in cursor.fetchall()]
-        except Exception as e:
-            logger.error(f"Error getting recent signals: {e}")
-            return []
-    
-    def get_recent_orders(self, hours: int = 24) -> List[Dict]:
-        """Get recent trading orders"""
-        try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
-            cursor = self.conn.execute(
-                '''SELECT * FROM trading_orders 
-                   WHERE timestamp >= ? 
-                   ORDER BY timestamp DESC''',
-                (cutoff_time.isoformat(),)
-            )
-            return [dict(row) for row in cursor.fetchall()]
-        except Exception as e:
-            logger.error(f"Error getting recent orders: {e}")
-            return []
-            
-    def save_news_analysis(self, analysis_data: Dict):
-        """Save news analysis results to the database"""
-        try:
-            with self.conn:
-                # Create news_analysis table if it doesn't exist
-                self.conn.execute('''
-                CREATE TABLE IF NOT EXISTS news_analysis (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT,
-                    news_items_analyzed INTEGER,
-                    symbols_identified TEXT,
-                    news_sources TEXT
-                )
-                ''')
-                
-                self.conn.execute(
-                    '''INSERT INTO news_analysis 
-                       (timestamp, news_items_analyzed, symbols_identified, news_sources) 
-                       VALUES (?, ?, ?, ?)''',
-                    (
-                        analysis_data.get('timestamp'),
-                        analysis_data.get('news_items_analyzed'),
-                        ','.join(analysis_data.get('symbols_identified', [])),
-                        ','.join(analysis_data.get('news_sources', []))
-                    )
-                )
-            logger.debug("Saved news analysis to database")
-        except Exception as e:
-            logger.error(f"Error saving news analysis: {e}")
-    
-    def save_openai_analysis(self, analysis_data: Dict):
-        """Save OpenAI analysis results to the database"""
-        try:
-            with self.conn:
-                # Create openai_analysis table if it doesn't exist
-                self.conn.execute('''
-                CREATE TABLE IF NOT EXISTS openai_analysis (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT,
-                    symbols_analyzed TEXT,
-                    analysis_result TEXT,
-                    tokens_used INTEGER
-                )
-                ''')
-                
-                import json
-                self.conn.execute(
-                    '''INSERT INTO openai_analysis 
-                       (timestamp, symbols_analyzed, analysis_result, tokens_used) 
-                       VALUES (?, ?, ?, ?)''',
-                    (
-                        analysis_data.get('timestamp'),
-                        ','.join(analysis_data.get('symbols_analyzed', [])),
-                        json.dumps(analysis_data.get('analysis_result', {})),
-                        analysis_data.get('tokens_used', 0)
-                    )
-                )
-            logger.debug("Saved OpenAI analysis to database")
-        except Exception as e:
-            logger.error(f"Error saving OpenAI analysis: {e}")
-    
-    def save_trade_execution(self, trade_data: Dict):
-        """Save trade execution results to the database"""
-        try:
-            with self.conn:
-                # Create trade_executions table if it doesn't exist
-                self.conn.execute('''
-                CREATE TABLE IF NOT EXISTS trade_executions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT,
-                    symbol TEXT,
-                    direction TEXT,
-                    quantity INTEGER,
-                    price REAL,
-                    status TEXT,
-                    deal_reference TEXT,
-                    confidence TEXT,
-                    risk_level TEXT,
-                    reasoning TEXT,
-                    executed BOOLEAN
-                )
-                ''')
-                
-                self.conn.execute(
-                    '''INSERT INTO trade_executions 
-                       (timestamp, symbol, direction, quantity, price, status, 
-                        deal_reference, confidence, risk_level, reasoning, executed) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (
-                        trade_data.get('timestamp'),
-                        trade_data.get('symbol'),
-                        trade_data.get('direction'),
-                        trade_data.get('quantity'),
-                        trade_data.get('price'),
-                        trade_data.get('status'),
-                        trade_data.get('deal_reference'),
-                        trade_data.get('confidence'),
-                        trade_data.get('risk_level'),
-                        trade_data.get('reasoning'),
-                        trade_data.get('executed', False)
-                    )
-                )
-            logger.debug(f"Saved trade execution for {trade_data.get('symbol')}")
-        except Exception as e:
-            logger.error(f"Error saving trade execution: {e}")
-    
-    def get_recent_trade_executions(self, hours: int = 24) -> List[Dict]:
-        """Get recent trade executions"""
-        try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
-            cursor = self.conn.execute(
-                '''SELECT * FROM trade_executions 
-                   WHERE timestamp >= ? 
-                   ORDER BY timestamp DESC''',
-                (cutoff_time.isoformat(),)
-            )
-            return [dict(row) for row in cursor.fetchall()]
-        except Exception as e:
-            logger.error(f"Error getting recent trade executions: {e}")
-            return []
-    
-    def get_recent_news_analysis(self, hours: int = 24) -> List[Dict]:
-        """Get recent news analysis results"""
-        try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
-            cursor = self.conn.execute(
-                '''SELECT * FROM news_analysis 
-                   WHERE timestamp >= ? 
-                   ORDER BY timestamp DESC''',
-                (cutoff_time.isoformat(),)
-            )
-            return [dict(row) for row in cursor.fetchall()]
-        except Exception as e:
-            logger.error(f"Error getting recent news analysis: {e}")
-            return []
-    
-    def get_recent_openai_analysis(self, hours: int = 24) -> List[Dict]:
-        """Get recent OpenAI analysis results"""
-        try:
-            cutoff_time = datetime.now() - timedelta(hours=hours)
-            cursor = self.conn.execute(
-                '''SELECT * FROM openai_analysis 
-                   WHERE timestamp >= ? 
-                   ORDER BY timestamp DESC''',
-                (cutoff_time.isoformat(),)
-            )
-            results = []
-            for row in cursor.fetchall():
-                row_dict = dict(row)
-                # Parse the JSON analysis result
-                try:
-                    import json
-                    row_dict['analysis_result'] = json.loads(row_dict['analysis_result'])
-                except:
-                    pass
-                results.append(row_dict)
-            return results
-        except Exception as e:
-            logger.error(f"Error getting recent OpenAI analysis: {e}")
-            return []
             
     def close(self):
         """Close the database connection"""
         if self.conn:
             self.conn.close()
-
-# Maintain backward compatibility by creating an alias
-EnhancedDatabase = Database

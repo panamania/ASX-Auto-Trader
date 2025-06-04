@@ -209,7 +209,7 @@ class ASXNewsCollector:
             return news_items
             
             # Uncomment below for real API integration
-            """
+            
             params = {"limit": limit}
 
             
@@ -360,7 +360,7 @@ class ASXNewsCollector:
                 logger.warning(f"Failed to fetch ASX announcements, status code: {response.status_code}")
                 return []
 
-            """
+            
             
             try:
                 data = response.json()
@@ -515,7 +515,7 @@ class ASXNewsCollector:
                     "sentiment": template["sentiment"],
                     "type": template["type"],
                     "category": template["type"],
-                    "generated": True
+                    "generated": True,
                     "type": template["type"]
                 }
                 

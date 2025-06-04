@@ -30,9 +30,9 @@ try:
     from asx_trader.market import MarketScanner
     from asx_trader.prediction import GPTEnhancedPredictionEngine
     from asx_trader.risk import RiskManagement
-    from asx_trader.database import Database
+    from asx_trader.enhanced_database import EnhancedDatabase
     from asx_trader.position_manager import PositionManager
-    from asx_trader.monitoring import MonitoringSystem
+    from asx_trader.enhanced_monitoring import EnhancedMarketMonitor
     from asx_trader.utils import is_market_open, get_next_run_time
     from asx_trader.curl_openai import openai_client
     from asx_trader.broker import broker
@@ -88,22 +88,18 @@ class EnhancedTradingSystemCurl:
     """Enhanced trading system with position management, monitoring, and curl-based API calls"""
     
     def __init__(self):
-        self.db = Database()
+        self.db = EnhancedDatabase()
         self.position_manager = PositionManager(database=self.db)
+        self.market_monitor = EnhancedMarketMonitor(
+            position_manager=self.position_manager, 
+            database=self.db
+        )
         
-        # Initialize other components first
+        # Initialize other components
         self.news_collector = ASXNewsCollector()
         self.market_scanner = MarketScanner()
         self.prediction_engine = GPTEnhancedPredictionEngine()
         self.risk_management = RiskManagement()
-        
-        # Initialize monitoring system with dependencies
-        self.market_monitor = MonitoringSystem()
-        self.market_monitor.set_dependencies(
-            market_scanner=self.market_scanner,
-            position_manager=self.position_manager, 
-            database=self.db
-        )
         
         # Test curl-based OpenAI client
         self._test_openai_client()
