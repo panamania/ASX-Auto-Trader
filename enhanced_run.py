@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced ASX Trader system with comprehensive position management, monitoring, and curl-based OpenAI integration.
-This version combines the enhanced features with curl-based API calls for better reliability.
+Enhanced ASX Trader system with comprehensive position management and monitoring.
 """
 import os
 import sys
@@ -30,104 +29,36 @@ try:
     from asx_trader.market import MarketScanner
     from asx_trader.prediction import GPTEnhancedPredictionEngine
     from asx_trader.risk import RiskManagement
-    from asx_trader.database import Database
+    from asx_trader.enhanced_database import EnhancedDatabase
     from asx_trader.position_manager import PositionManager
-    from asx_trader.monitoring import MonitoringSystem
+    from asx_trader.enhanced_monitoring import EnhancedMarketMonitor
     from asx_trader.utils import is_market_open, get_next_run_time
-    from asx_trader.curl_openai import openai_client
-    from asx_trader.broker import broker
 except Exception as e:
     logger.error(f"Error importing modules: {e}")
     traceback.print_exc()
     sys.exit(1)
 
-def calculate_position_size(symbol, signal, risk_level, market_data, max_position=Config.MAX_POSITION_SIZE):
-    """
-    Calculate appropriate position size based on signal and risk level.
-    
-    Args:
-        symbol: Stock symbol
-        signal: Trading signal (BUY, SELL, HOLD)
-        risk_level: Risk assessment level (Low, Medium, High, Extreme)
-        market_data: Market data dictionary
-        max_position: Maximum position size in dollars
-        
-    Returns:
-        int: Quantity of shares to trade
-    """
-    # Default to 0 if not a BUY or SELL signal
-    if signal not in ["BUY", "SELL"]:
-        return 0
-    
-    # Get current price from market data
-    price = 0
-    if symbol in market_data:
-        price = market_data[symbol].get("current_price", 0)
-    
-    # If we couldn't get a price, we can't calculate quantity
-    if price <= 0:
-        return 0
-    
-    # Adjust position size based on risk level
-    risk_factor = {
-        "Low": 1.0,
-        "Medium": 0.7, 
-        "High": 0.4,
-        "Extreme": 0.2
-    }.get(risk_level, 0.5)
-    
-    # Calculate dollar amount
-    position_dollars = max_position * risk_factor
-    
-    # Calculate quantity (round down to nearest whole share)
-    quantity = int(position_dollars / price)
-    
-    return quantity
-
-class EnhancedTradingSystemCurl:
-    """Enhanced trading system with position management, monitoring, and curl-based API calls"""
+class EnhancedTradingSystem:
+    """Enhanced trading system with position management and monitoring"""
     
     def __init__(self):
-        self.db = Database()
+        self.db = EnhancedDatabase()
         self.position_manager = PositionManager(database=self.db)
+        self.market_monitor = EnhancedMarketMonitor(
+            position_manager=self.position_manager, 
+            database=self.db
+        )
         
-        # Initialize other components first
+        # Initialize other components
         self.news_collector = ASXNewsCollector()
         self.market_scanner = MarketScanner()
         self.prediction_engine = GPTEnhancedPredictionEngine()
         self.risk_management = RiskManagement()
         
-        # Initialize monitoring system with dependencies
-        self.market_monitor = MonitoringSystem()
-        self.market_monitor.set_dependencies(
-            market_scanner=self.market_scanner,
-            position_manager=self.position_manager, 
-            database=self.db
-        )
-        
-        # Test curl-based OpenAI client
-        self._test_openai_client()
-        
-        logger.info("Enhanced trading system with curl integration initialized")
-    
-    def _test_openai_client(self):
-        """Test the curl-based OpenAI client"""
-        try:
-            test_response = openai_client.chat_completion(
-                model="o4-mini",
-                messages=[{"role": "user", "content": "Say hello"}],
-                max_tokens=10
-            )
-            if test_response.get('content'):
-                logger.info(f"OpenAI curl client test successful: {test_response.get('content', '')}")
-            else:
-                logger.warning(f"OpenAI curl client test returned no content: {test_response}")
-        except Exception as e:
-            logger.error(f"OpenAI curl client test failed: {e}")
-            raise
+        logger.info("Enhanced trading system initialized")
     
     def run_enhanced_trading_cycle(self, args):
-        """Run an enhanced trading cycle with position management and curl-based API calls"""
+        """Run an enhanced trading cycle with position management"""
         start_time = datetime.datetime.now()
         logger.info(f"Starting enhanced trading cycle at {start_time}")
         
@@ -171,15 +102,15 @@ class EnhancedTradingSystemCurl:
                 logger.warning("No news items found, skipping signal generation")
                 status = "skipped:no_news"
             else:
-                # 5. Analyze news and generate signals using curl-based API
+                # 5. Analyze news and generate signals
                 signals = self.prediction_engine.analyze_news(news_items)
-                logger.info(f"Generated {len(signals)} trading signals using curl-based API")
+                logger.info(f"Generated {len(signals)} trading signals")
                 signals_generated = len(signals)
                 
                 # Save signals to database
                 self.db.save_trading_signals(signals)
                 
-                # 6. Perform risk assessment using curl-based API
+                # 6. Perform risk assessment
                 signal_symbols = set()
                 for signal in signals:
                     signal_symbols.update(signal.get("symbols", []))
@@ -191,9 +122,7 @@ class EnhancedTradingSystemCurl:
                 
                 # 7. Process trading signals (if trading is enabled)
                 if Config.TRADING_ENABLED and args.execute_trades:
-                    orders_created = self._process_trading_signals_enhanced(signals, market_data, risk_assessment)
-                elif args.simulate:
-                    orders_created = self._simulate_trading_signals(signals, market_data, risk_assessment)
+                    orders_created = self._process_trading_signals(signals, market_data, risk_assessment)
                 else:
                     logger.info("Trading disabled or --execute-trades not specified - signals generated but no trades executed")
             
@@ -216,8 +145,8 @@ class EnhancedTradingSystemCurl:
         
         return status, symbols_analyzed, signals_generated, orders_created
     
-    def _process_trading_signals_enhanced(self, signals, market_data, risk_assessment):
-        """Process trading signals with enhanced position management"""
+    def _process_trading_signals(self, signals, market_data, risk_assessment):
+        """Process trading signals and execute trades"""
         orders_created = 0
         
         try:
@@ -318,66 +247,6 @@ class EnhancedTradingSystemCurl:
         
         return orders_created
     
-    def _simulate_trading_signals(self, signals, market_data, risk_assessment):
-        """Simulate trading signals for testing purposes"""
-        orders_created = 0
-        executed_orders = []
-        
-        try:
-            for signal in signals:
-                symbol = signal.get("symbols", ["MARKET"])[0] if signal.get("symbols") else "MARKET"
-                signal_type = signal.get("signal", "NONE")
-                
-                # Skip if not an actionable symbol or signal
-                if symbol == "MARKET" or signal_type not in ["BUY", "SELL"]:
-                    continue
-                    
-                # Get risk level for this symbol
-                symbol_risks = risk_assessment.get("symbol_risks", [])
-                symbol_risk = "Medium"  # Default
-                for risk in symbol_risks:
-                    if risk.get("symbol") == symbol:
-                        symbol_risk = risk.get("risk_level", "Medium")
-                        break
-                
-                # Calculate quantity using the helper function
-                quantity = calculate_position_size(
-                    symbol, 
-                    signal_type, 
-                    symbol_risk, 
-                    market_data, 
-                    Config.MAX_POSITION_SIZE
-                )
-                
-                if quantity > 0:
-                    # Create simulated order
-                    order = {
-                        "symbol": symbol,
-                        "action": signal_type,
-                        "quantity": quantity,
-                        "risk_level": symbol_risk,
-                        "estimated_cost": quantity * market_data.get(symbol, {}).get("current_price", 0),
-                        "news_id": signal.get("news_id"),
-                        "execution_result": {
-                            "status": "SIMULATED",
-                            "dealReference": f"SIM-{len(executed_orders)}",
-                            "details": "Simulation mode"
-                        }
-                    }
-                    
-                    executed_orders.append(order)
-                    orders_created += 1
-                    logger.info(f"Order simulated: {signal_type} {quantity} {symbol}")
-            
-            # Save simulated orders to database
-            if executed_orders:
-                self.db.save_trading_orders(executed_orders)
-        
-        except Exception as e:
-            logger.error(f"Error in signal simulation: {e}")
-        
-        return orders_created
-    
     def _save_portfolio_snapshot(self):
         """Save current portfolio performance snapshot"""
         try:
@@ -421,7 +290,7 @@ class EnhancedTradingSystemCurl:
                               positions_updated, market_data, risk_assessment):
         """Print comprehensive trading summary"""
         print("\n" + "="*60)
-        print("ENHANCED ASX TRADER RESULTS (CURL VERSION)")
+        print("ENHANCED ASX TRADER RESULTS")
         print("="*60)
         
         # Basic statistics
@@ -433,12 +302,6 @@ class EnhancedTradingSystemCurl:
         # Risk assessment
         if risk_assessment:
             print(f"Market Risk Level: {risk_assessment.get('overall_risk_level', 'Unknown')}")
-        
-        # Show top signals
-        if signals_generated > 0:
-            print(f"\nTOP TRADING SIGNALS:")
-            # This would need access to the signals list - we'll add it as a parameter if needed
-            print("  (Signal details would be shown here)")
         
         # Position summary
         if self.position_manager:
@@ -536,15 +399,14 @@ class EnhancedTradingSystemCurl:
             logger.error(f"Error during cleanup: {e}")
 
 def main():
-    """Main function for enhanced ASX trader with curl integration"""
-    parser = argparse.ArgumentParser(description="Enhanced ASX Trader System with Curl Integration")
+    """Main function for enhanced ASX trader"""
+    parser = argparse.ArgumentParser(description="Enhanced ASX Trader System")
     parser.add_argument("--symbols", type=str, help="Comma-separated list of symbols to analyze")
     parser.add_argument("--max-symbols", type=int, default=20, help="Maximum number of symbols to analyze")
     parser.add_argument("--news-limit", type=int, default=50, help="Maximum number of news items to fetch")
     parser.add_argument("--run-once", action="store_true", help="Run once and exit")
     parser.add_argument("--force-run", action="store_true", help="Force run even if market is closed")
     parser.add_argument("--execute-trades", action="store_true", help="Execute actual trades (requires TRADING_ENABLED=true)")
-    parser.add_argument("--simulate", action="store_true", help="Simulate trades without execution")
     parser.add_argument("--start-monitoring", action="store_true", help="Start continuous market monitoring")
     parser.add_argument("--generate-report", action="store_true", help="Generate and display comprehensive report")
     args = parser.parse_args()
@@ -552,21 +414,12 @@ def main():
     # Load environment variables
     load_dotenv()
     
-    logger.info("Starting Enhanced ASX Trader System with Curl Integration")
+    logger.info("Starting Enhanced ASX Trader System")
     
     # Initialize enhanced trading system
-    trading_system = EnhancedTradingSystemCurl()
+    trading_system = EnhancedTradingSystem()
     
     try:
-        # Check if trading is enabled
-        if Config.TRADING_ENABLED:
-            if Config.BROKER_ACCOUNT_TYPE == "LIVE":
-                logger.warning("⚠️ TRADING IS ENABLED WITH A LIVE ACCOUNT - REAL MONEY WILL BE USED ⚠️")
-            else:
-                logger.info("Trading is enabled with a DEMO account")
-        else:
-            logger.info("Trading is disabled, orders will be simulated")
-        
         # Generate report if requested
         if args.generate_report:
             report = trading_system.generate_report()

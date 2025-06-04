@@ -1,6 +1,5 @@
 """
-Enhanced monitoring and alerting system for trading activity with real-time alerts and position tracking.
-This version combines the original monitoring functionality with enhanced features.
+Enhanced market monitoring system with real-time alerts and position tracking.
 """
 import json
 import logging
@@ -9,8 +8,10 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, asdict
 import threading
 import time
-import boto3
 from asx_trader.config import Config
+from asx_trader.monitoring import MonitoringSystem
+from asx_trader.market import MarketScanner
+from asx_trader.position_manager import PositionManager
 
 logger = logging.getLogger(__name__)
 
@@ -18,34 +19,23 @@ logger = logging.getLogger(__name__)
 class MarketAlert:
     """Represents a market alert"""
     symbol: str
-    alert_type: str  # 'PRICE_MOVE', 'VOLUME_SPIKE', 'NEWS', 'TECHNICAL', 'POSITION_LOSS', 'POSITION_GAIN'
+    alert_type: str  # 'PRICE_MOVE', 'VOLUME_SPIKE', 'NEWS', 'TECHNICAL'
     message: str
     severity: str  # 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'
     timestamp: datetime
     current_price: Optional[float] = None
     trigger_value: Optional[float] = None
-
-class MonitoringSystem:
-    """Enhanced monitoring system with AWS SNS integration and real-time alerts"""
     
-    def __init__(self):
-        # AWS SNS setup
-        self.sns_client = None
-        self.topic_arn = Config.SNS_TOPIC_ARN
+class EnhancedMarketMonitor:
+    """Enhanced market monitoring with real-time alerts and position tracking"""
+    
+    def __init__(self, position_manager: PositionManager = None, database=None):
+        self.monitoring_system = MonitoringSystem()
+        self.market_scanner = MarketScanner()
+        self.position_manager = position_manager
+        self.database = database
         
-        # Initialize AWS client if credentials are available
-        if Config.AWS_ACCESS_KEY and Config.AWS_SECRET_KEY:
-            try:
-                self.sns_client = boto3.client(
-                    'sns',
-                    aws_access_key_id=Config.AWS_ACCESS_KEY,
-                    aws_secret_access_key=Config.AWS_SECRET_KEY,
-                    region_name=Config.AWS_REGION
-                )
-            except Exception as e:
-                logger.warning(f"Failed to initialize AWS SNS client: {e}")
-        
-        # Enhanced monitoring features
+        # Monitoring configuration
         self.monitoring_active = False
         self.monitoring_thread = None
         self.update_interval = 60  # seconds
@@ -62,93 +52,6 @@ class MonitoringSystem:
         # Watchlist - symbols to monitor closely
         self.watchlist = set()
         
-        # Dependencies (will be injected)
-        self.market_scanner = None
-        self.position_manager = None
-        self.database = None
-        
-    def set_dependencies(self, market_scanner=None, position_manager=None, database=None):
-        """Set dependencies for enhanced monitoring"""
-        self.market_scanner = market_scanner
-        self.position_manager = position_manager
-        self.database = database
-        
-    def send_notification(self, subject, message):
-        """Send notification via AWS SNS"""
-        try:
-            if not self.sns_client or not self.topic_arn:
-                logger.debug(f"SNS not configured, logging notification: {subject}")
-                return None
-                
-            response = self.sns_client.publish(
-                TopicArn=self.topic_arn,
-                Message=message,
-                Subject=subject
-            )
-            logger.info(f"Notification sent: {subject}")
-            return response
-        except Exception as e:
-            logger.error(f"Error sending notification: {e}")
-            return None
-            
-    def track_trading_activity(self, orders, signals, risk_assessment):
-        """Track trading activity and send relevant notifications"""
-        try:
-            # Compile trade summary
-            summary = {
-                "timestamp": datetime.now().isoformat(),
-                "orders": orders,
-                "signals_count": len(signals),
-                "overall_risk_level": risk_assessment.get("overall_risk_level", "Unknown")
-            }
-            
-            # Log activity
-            logger.info(f"Trading activity tracked: {len(orders)} orders placed")
-            
-            # Skip notification if no SNS topic is configured
-            if not self.topic_arn:
-                logger.debug("SNS Topic ARN not configured, skipping notifications")
-                return True
-                
-            # Send notification with summary
-            self.send_notification(
-                f"Trading Summary - {datetime.now().strftime('%Y-%m-%d')}",
-                json.dumps(summary, indent=2)
-            )
-            
-            # Send alerts for high-risk trades
-            for order in orders:
-                if order.get("risk_level") in ["High", "Extreme"]:
-                    alert_msg = f"HIGH RISK TRADE: {order.get('action')} {order.get('quantity')} {order.get('symbol')}"
-                    self.send_notification("HIGH RISK TRADE ALERT", alert_msg)
-                    
-            return True
-        except Exception as e:
-            logger.error(f"Error tracking trading activity: {e}")
-            return False
-    
-    def track_api_usage(self, api_calls, tokens_used, analysis_type):
-        """Track OpenAI API usage"""
-        try:
-            # Record in database if available
-            if self.database:
-                self.database.record_api_usage(analysis_type, tokens_used, True)
-            
-            # Log usage
-            logger.info(f"API Usage - {analysis_type}: {api_calls} calls, {tokens_used} tokens")
-            
-            # Send alert if usage is high
-            if tokens_used > 10000:  # High token usage threshold
-                self.send_notification(
-                    "High API Usage Alert",
-                    f"High token usage detected: {tokens_used} tokens for {analysis_type}"
-                )
-                
-        except Exception as e:
-            logger.error(f"Error tracking API usage: {e}")
-    
-    # Enhanced monitoring methods
-    
     def start_monitoring(self, symbols: List[str] = None):
         """Start real-time market monitoring"""
         try:
@@ -208,7 +111,7 @@ class MonitoringSystem:
                 # Remove duplicates
                 symbols_to_monitor = list(set(symbols_to_monitor))
                 
-                if symbols_to_monitor and self.market_scanner:
+                if symbols_to_monitor:
                     current_market_data = self.market_scanner.get_market_data(symbols_to_monitor)
                     
                     # Analyze market data for alerts
@@ -405,7 +308,7 @@ class MonitoringSystem:
                 
                 # Send notification for high severity alerts
                 if alert.severity in ['HIGH', 'CRITICAL']:
-                    self.send_notification(
+                    self.monitoring_system.send_notification(
                         subject=f"Trading Alert - {alert.symbol}",
                         message=f"{alert.alert_type}: {alert.message}\nTime: {alert.timestamp}\nSeverity: {alert.severity}"
                     )
@@ -551,6 +454,3 @@ class MonitoringSystem:
         except Exception as e:
             logger.error(f"Error generating monitoring report: {e}")
             return f"Error generating report: {str(e)}"
-
-# Maintain backward compatibility by creating an alias
-EnhancedMarketMonitor = MonitoringSystem
